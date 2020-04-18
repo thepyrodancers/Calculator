@@ -65,10 +65,10 @@ Token Token_stream::get()
     case '.':
     case '0': case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8': case '9':
-    { cin.putback(ch); // put digit back into the input stream
-    double val;
-    cin >> val; // read a floating-point number
-    return Token{ 'n',val }; // let ‘8’ represent “a number”
+        {cin.putback(ch); // put digit back into the input stream
+        double val;
+        cin >> val; // read a floating-point number
+        return Token{'n',val}; // let ‘n’ represent “a number”
     }
     default:
         error("Bad token");
@@ -96,7 +96,7 @@ double primary()     // read and evaluate a Primary
         if (t.kind != ')') error("')' expected");
         return d;
     }
-    case 'n':            // we use '8' to represent a number
+    case 'n':            // we use 'n' to represent a number
         return t.value;  // return the number's value
     default:
         error("primary expected");
