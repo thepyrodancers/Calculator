@@ -62,7 +62,7 @@ Token Token_stream::get()
         case 'x': // for “quit”
         case '(': case ')': case '+': case '-': case '*': case '/':
         {
-            return Token{ ch }; // let each character represent itself
+            return Token{ch}; // let each character represent itself
         }
         case '.':
         case '0': case '1': case '2': case '3': case '4':
@@ -71,7 +71,7 @@ Token Token_stream::get()
             cin.putback(ch); // put digit back into the input stream
             double val;
             cin >> val; // read a floating-point number
-            return Token{ 'n',val }; // let ‘n’ represent “a number”}
+            return Token{'n',val}; // let ‘n’ represent “a number”}
         }
         default:
         {
