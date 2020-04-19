@@ -60,7 +60,7 @@ Token Token_stream::get()
     switch (ch) {
         case '=': // for “print”
         case 'x': // for “quit”
-        case '(': case ')': case '+': case '-': case '*': case '/':
+        case '{': case '}': case '(': case ')': case '+': case '-': case '*': case '/':
         {
             return Token{ch}; // let each character represent itself
         }
@@ -94,6 +94,13 @@ double primary()     // read and evaluate a Primary
 {
     Token t = ts.get();
     switch (t.kind) {
+    case '{':
+    {
+        double c = expression();
+        t = ts.get();
+        if (t.kind != '}') error("'}' expected");
+        return c;
+    }
     case '(':    // handle '(' expression ')'
     {
         double d = expression();
@@ -165,7 +172,7 @@ try {
 
     cout << "Welcome to our simple calculator. \nPlease enter expressions using floating-point numbers.\n";
     cout << "You may use '+' for addition, '-' for subtraction, '*' for multiplication, and '/' for division.\n";
-    cout << "You may use '(' and ')' to denote modifications to the normal order of mathematical operations.\n";
+    cout << "You may use '(', ')','{', & '}' to denote modifications to the normal order of mathematical operations.\n";
     cout << "End your expressions with '=' to get the result.\n\n";
     cout << ">";
     double val = 0;
