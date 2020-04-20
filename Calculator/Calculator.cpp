@@ -5,14 +5,15 @@
 #include "Facilities.h"
 
 //------------------------------------------------------------------------------
+// Defines Token(ch) and Token (ch,val)
 
 class Token {
 public:
-    char kind;        // what kind of token
-    double value;     // for numbers: a value 
-    Token(char ch)    // make a Token from a char
+    char kind;        
+    double value;     
+    Token(char ch)    
         :kind(ch), value(0) { }
-    Token(char ch, double val)     // make a Token from a char and a double
+    Token(char ch, double val)     
         :kind(ch), value(val) { }
 };
 
@@ -20,21 +21,19 @@ public:
 
 class Token_stream {
 public:
-    Token_stream(); // make a Token_stream that reads from cin
-    Token get(); // get a Token
-    void putback(Token t); // put a Token back
+    Token_stream(); 
+    Token get(); 
+    void putback(Token t); 
 private:
-    bool full{ false }; // is there a Token in the buffer?
-    Token buffer; // here is where we keep a Token put back using putback()
+    bool full; // Tracks if buffer can be overwritten or not
+    Token buffer; // Receives token from .putback(Token t)
 
 };
 
-
 //------------------------------------------------------------------------------
 
-// The constructor just sets full to indicate that the buffer is empty:
-Token_stream::Token_stream()
-    :full(false), buffer(0)    // no Token in buffer
+Token_stream::Token_stream()   
+    :full(false), buffer(0)    
 {
 }
 
@@ -43,36 +42,38 @@ Token_stream::Token_stream()
 void Token_stream::putback(Token t)
 {
     if (full) error("putback() into a full buffer");
-    buffer = t; // copy t to buffer
-    full = true; // buffer is now full
+    buffer = t; 
+    full = true; //Buffer cannot be overwritten
 }
 
 //------------------------------------------------------------------------------
+// Evaluates the buffer and assembles and returns Token(ch) or Token(ch,val) depending 
+// on character input
 
 Token Token_stream::get()
 {
-    if (full) { // do we already have a Token ready?
-        full = false; // remove Token from buffer
-        return buffer;
+    if (full) { 
+        full = false; // Buffer can be overwritten
+        return buffer; // Returns token currently in buffer
     }
     char ch;
-    cin >> ch; // note that >> skips whitespace (space, newline, tab, etc.)
+    cin >> ch; 
     switch (ch) {
-        case '=': // for “print”
-        case 'x': // for “quit”
-        case '!': // for "factorial"
+        case '=': 
+        case 'x': 
+        case '!': 
         case '{': case '}': case '(': case ')': case '+': case '-': case '*': case '/':
         {
-            return Token{ch}; // let each character represent itself
+            return Token{ch}; 
         }
         case '.':
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
         { 
-            cin.putback(ch); // put digit back into the input stream
+            cin.putback(ch); 
             double val;
-            cin >> val; // read a floating-point number
-            return Token{'n',val}; // let ‘n’ represent “a number”}
+            cin >> val; 
+            return Token{'n',val}; 
         }
         default:
         {
@@ -83,28 +84,18 @@ Token Token_stream::get()
 
 //------------------------------------------------------------------------------
 
-Token_stream ts;       // provides get() and putback()
+Token_stream ts;       
 
 //------------------------------------------------------------------------------
 
-double expression();  // read and evaluate a Expression
+double expression();  
 
 //------------------------------------------------------------------------------
+// Gets next token from the token stream and evaluates expression grouped within
+// '{}' or '()' as well as single number expressions and returns the value 
+// for the grouped expression or single number
 
-//double factorial() // read and evaluate a factorial
-//{
-//    Token t = ts.get();
-//    switch (t.kind) {
-//    case '!':
-//    {
-//
-//    }
-//    }
-//}
-
-//------------------------------------------------------------------------------
-
-double primary()     // read and evaluate a Primary
+double primary()     
 {
     
     Token t = ts.get();
@@ -116,16 +107,16 @@ double primary()     // read and evaluate a Primary
         if (t.kind != '}') error("'}' expected");
         return c;
     }
-    case '(':    // handle '(' expression ')'
+    case '(':    
     {
         double d = expression();
         t = ts.get();
         if (t.kind != ')') error("')' expected");
         return d;
     }
-    case 'n':         // we use 'n' to represent a number
+    case 'n':         
     {
-        return t.value;  // return the number's value
+        return t.value;  
     }
     default:
         error("primary expected");
@@ -133,6 +124,9 @@ double primary()     // read and evaluate a Primary
 }
 
 //------------------------------------------------------------------------------
+// Gets next token from token stream and calculates a factorial denoted by '!' and
+// returns the value for the factorial. All tokens other than '!' are putback into the
+// token stream
 
 double factorial() {
     double left = primary();
@@ -158,11 +152,14 @@ double factorial() {
 }
 
 //------------------------------------------------------------------------------
+// Gets next token from token stream and evaluates a term. Calculates multiplication or division
+// of a term by a factorial or primary and returns the result. All tokens other than '*' and '/'
+// are put back into the token stream
 
 double term()
 {
     double left = factorial();
-    Token t = ts.get(); // get the next Token from the Token stream
+    Token t = ts.get();
     while (true) {
         switch (t.kind) {
         case '*':
@@ -179,7 +176,7 @@ double term()
         break;
         }
         default:
-            ts.putback(t); // put t back into the Token stream
+            ts.putback(t); 
             return left;
         }
     }
@@ -187,29 +184,33 @@ double term()
 
 
 //------------------------------------------------------------------------------
+// Gets next token from the token stream and evaluates expressions. Calculates 
+// addition and subtraction of terms within the expression. All tokens other than
+// '+' and '-' are returned to the token stream
 
 double expression()
 {
-    double left = term(); // read and evaluate a Term
-    Token t = ts.get(); // get the next Token from the Token stream
+    double left = term(); 
+    Token t = ts.get(); 
     while (true) {
         switch (t.kind) {
         case '+':
-            left += term(); // evaluate Term and add
+            left += term(); 
             t = ts.get();
             break;
         case '-':
-            left -= term(); // evaluate Term and subtract
+            left -= term(); 
             t = ts.get();
             break;
         default:
-            ts.putback(t); // put t back into the token stream
-            return left; // finally: no more + or –; return the answer
+            ts.putback(t); 
+            return left; 
         }
     }
 }
 
 //------------------------------------------------------------------------------
+
 
 int main()
 try {
