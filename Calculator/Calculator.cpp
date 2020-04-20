@@ -50,7 +50,7 @@ void Token_stream::putback(Token t)
 
 //------------------------------------------------------------------------------
 
-double factorial(double val)
+double factorial(int val)
 {
     for (int i = val-1; i > 0; i--)
         val *= i;
@@ -73,7 +73,7 @@ Token Token_stream::get()
     switch (ch) {
     case ';':    // for "print"
     case 'q':    // for "quit"
-    case '(': case ')': case '+': case '-': case '*': case '/':
+    case '!': case '(': case ')': case '+': case '-': case '*': case '/':
         return Token(ch);        // let each character represent itself
     case '.':
     case '0': case '1': case '2': case '3': case '4':
@@ -82,9 +82,6 @@ Token Token_stream::get()
         cin.putback(ch);         // put digit back into the input stream
         double val;
         cin >> val;              // read a floating-point number
-        cin >> ch;
-        if (ch == '!') val = factorial(val); 
-        else cin.putback(ch);
         return Token('n', val);   // let 'n' represent "a number"
     }
     default:
@@ -105,6 +102,7 @@ double expression();    // declaration so that primary() can call expression()
 double primary()     // read and evaluate a Primary
 {
     Token t = ts.get();
+    Token t2(0);
     switch (t.kind) {
     case '(':    // handle '(' expression ')'
     {
@@ -114,6 +112,15 @@ double primary()     // read and evaluate a Primary
         return d;
     }
     case 'n':            // we use 'n' to represent a number
+        t2 = ts.get();
+        if (t2.kind == '!')
+        {
+            t.value = factorial(t.value);
+        }
+        else
+        {
+            ts.putback(t2);
+        }
         return t.value;  // return the number's value
     case 'q':
         exit(0);
