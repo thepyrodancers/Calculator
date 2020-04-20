@@ -114,6 +114,10 @@ double primary()     // read and evaluate a Primary
 
 int main()
 try {
+    cout << "Welcome to our simple calculator. Please enter expressions using \n";
+    cout << "floating-point numbers. enter ';' to calculate and display, 'q' to \n";
+    cout << "quit. The following operators are supported : \n";
+    cout << "   + - * / ( ) \n";
     double val = 0;
     while (cin)
     {
