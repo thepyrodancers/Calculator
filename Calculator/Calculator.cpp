@@ -50,6 +50,15 @@ void Token_stream::putback(Token t)
 
 //------------------------------------------------------------------------------
 
+double factorial(int val)
+{
+    for (int i = val-1; i > 0; i--)
+        val *= i;
+    return val;
+}
+
+//------------------------------------------------------------------------------
+
 Token Token_stream::get()
 {
     if (full) {       // do we already have a Token ready?
@@ -64,7 +73,7 @@ Token Token_stream::get()
     switch (ch) {
     case ';':    // for "print"
     case 'q':    // for "quit"
-    case '(': case ')': case '+': case '-': case '*': case '/':
+    case '!': case '(': case ')': case '+': case '-': case '*': case '/':
         return Token(ch);        // let each character represent itself
     case '.':
     case '0': case '1': case '2': case '3': case '4':
@@ -99,21 +108,39 @@ double primary()     // read and evaluate a Primary
         double d = expression();
         t = ts.get();
         if (t.kind != ')') error("')' expected");
+        t = ts.get();
+        if (t.kind == '!') d = factorial(d);
+        else ts.putback(t);
         return d;
     }
     case 'n':            // we use 'n' to represent a number
-        return t.value;  // return the number's value
+    {
+        double d = t.value;
+        Token t = ts.get();
+        if (t.kind == '!') d = factorial(d);
+        else ts.putback(t);
+        return d;
+    }
+
     case 'q':
+    {
         exit(0);
         return 0;
+    }
     default:
+    {
         error("primary expected");
+    }
     }
 }
 //------------------------------------------------------------------------------
 
 int main()
 try {
+    cout << "Welcome to our simple calculator. Please enter expressions using \n";
+    cout << "floating-point numbers. enter ';' to calculate and display, 'q' to \n";
+    cout << "quit. The following operators are supported : \n";
+    cout << "   + - * / ( ) \n";
     double val = 0;
     while (cin)
     {
