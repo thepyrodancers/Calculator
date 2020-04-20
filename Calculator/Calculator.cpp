@@ -102,31 +102,35 @@ double expression();    // declaration so that primary() can call expression()
 double primary()     // read and evaluate a Primary
 {
     Token t = ts.get();
-    Token t2(0);
     switch (t.kind) {
     case '(':    // handle '(' expression ')'
     {
         double d = expression();
         t = ts.get();
         if (t.kind != ')') error("')' expected");
+        t = ts.get();
+        if (t.kind == '!') d = factorial(d);
+        else ts.putback(t);
         return d;
     }
     case 'n':            // we use 'n' to represent a number
-        t2 = ts.get();
-        if (t2.kind == '!')
-        {
-            t.value = factorial(t.value);
-        }
-        else
-        {
-            ts.putback(t2);
-        }
-        return t.value;  // return the number's value
+    {
+        double d = t.value;
+        Token t = ts.get();
+        if (t.kind == '!') d = factorial(d);
+        else ts.putback(t);
+        return d;
+    }
+
     case 'q':
+    {
         exit(0);
         return 0;
+    }
     default:
+    {
         error("primary expected");
+    }
     }
 }
 //------------------------------------------------------------------------------
