@@ -223,8 +223,8 @@ try {
     double val = 0;
     while (cin) {
         Token t = ts.get();
-        if (t.kind == 'x') break; // ‘x’ for “quit”
-        if (t.kind == '=') // ‘;’ for “print now”
+        if (t.kind == 'x') break; 
+        if (t.kind == '=') 
             cout << " " << val << '\n';
         else
             ts.putback(t);
