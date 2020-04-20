@@ -50,6 +50,15 @@ void Token_stream::putback(Token t)
 
 //------------------------------------------------------------------------------
 
+double factorial(double val)
+{
+    for (int i = val-1; i > 0; i--)
+        val *= i;
+    return val;
+}
+
+//------------------------------------------------------------------------------
+
 Token Token_stream::get()
 {
     if (full) {       // do we already have a Token ready?
@@ -73,6 +82,9 @@ Token Token_stream::get()
         cin.putback(ch);         // put digit back into the input stream
         double val;
         cin >> val;              // read a floating-point number
+        cin >> ch;
+        if (ch == '!') val = factorial(val); 
+        else cin.putback(ch);
         return Token('n', val);   // let 'n' represent "a number"
     }
     default:
