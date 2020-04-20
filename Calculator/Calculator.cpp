@@ -60,6 +60,7 @@ Token Token_stream::get()
     switch (ch) {
         case '=': // for “print”
         case 'x': // for “quit”
+        case '!': // for "factorial"
         case '{': case '}': case '(': case ')': case '+': case '-': case '*': case '/':
         {
             return Token{ch}; // let each character represent itself
@@ -90,8 +91,22 @@ double expression();  // read and evaluate a Expression
 
 //------------------------------------------------------------------------------
 
+//double factorial() // read and evaluate a factorial
+//{
+//    Token t = ts.get();
+//    switch (t.kind) {
+//    case '!':
+//    {
+//
+//    }
+//    }
+//}
+
+//------------------------------------------------------------------------------
+
 double primary()     // read and evaluate a Primary
 {
+    
     Token t = ts.get();
     switch (t.kind) {
     case '{':
@@ -108,8 +123,10 @@ double primary()     // read and evaluate a Primary
         if (t.kind != ')') error("')' expected");
         return d;
     }
-    case 'n':            // we use 'n' to represent a number
+    case 'n':         // we use 'n' to represent a number
+    {
         return t.value;  // return the number's value
+    }
     default:
         error("primary expected");
     }
@@ -117,18 +134,45 @@ double primary()     // read and evaluate a Primary
 
 //------------------------------------------------------------------------------
 
+double factorial() {
+    double left = primary();
+    Token t = ts.get();
+    while (true) {
+
+        switch (t.kind) {
+        case '!':
+        {
+            int x = left;
+            int k = (x - 1);
+            double f = x;
+            for (int i = 0; i < k; ++i) {
+                f *= (--x);
+            }
+            return f;
+        }
+        default:
+            ts.putback(t);
+            return left;
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+
 double term()
 {
-    double left = primary();
+    double left = factorial();
     Token t = ts.get(); // get the next Token from the Token stream
     while (true) {
         switch (t.kind) {
         case '*':
-            left *= primary();
+        {
+            left *= factorial();
             t = ts.get();
             break;
+        }
         case '/':
-        { double d = primary();
+        { double d = factorial();
         if (d == 0) error("divide by zero");
         left /= d;
         t = ts.get();
