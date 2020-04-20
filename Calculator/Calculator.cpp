@@ -50,7 +50,7 @@ void Token_stream::putback(Token t)
 
 //------------------------------------------------------------------------------
 
-double factorial(int val)
+double calculate_factorial(int val)
 {
     for (int i = val-1; i > 0; i--)
         val *= i;
@@ -108,17 +108,11 @@ double primary()     // read and evaluate a Primary
         double d = expression();
         t = ts.get();
         if (t.kind != ')') error("')' expected");
-        t = ts.get();
-        if (t.kind == '!') d = factorial(d);
-        else ts.putback(t);
         return d;
     }
     case 'n':            // we use 'n' to represent a number
     {
         double d = t.value;
-        Token t = ts.get();
-        if (t.kind == '!') d = factorial(d);
-        else ts.putback(t);
         return d;
     }
 
@@ -133,6 +127,30 @@ double primary()     // read and evaluate a Primary
     }
     }
 }
+//------------------------------------------------------------------------------
+
+double secondary()
+{
+    double left = primary();
+    Token t = ts.get();
+
+    while (true)
+    {
+        switch (t.kind)
+        {
+        case '!':
+        {
+            left = calculate_factorial(left);
+            return left;
+        }
+        default:
+            ts.putback(t);
+            return left;
+        }
+        return left;
+    }
+}
+
 //------------------------------------------------------------------------------
 
 int main()
@@ -167,18 +185,18 @@ catch (...) {
 
 double term()
 {
-    double left = primary();
+    double left = secondary();
     Token t = ts.get();     // get the next token
 
     while (true) {
         switch (t.kind) {
         case '*':
-            left *= primary();
+            left *= secondary();
             t = ts.get();
             break;
         case '/':
         {
-            double d = primary();
+            double d = secondary();
             if (d == 0) error("divide by zero");
             left /= d;
             t = ts.get();
