@@ -1,19 +1,21 @@
 /*
-THE CODE BELOW IS EXAMPLE CODE. FOR LEARNING PURPOSES ONLY
+Tip: THE CODE BELOW IS EXAMPLE CODE. FOR LEARNING PURPOSES ONLY
 */
 
 /*
-I think you would typically start with all you #includes, no
+Tip: I think you would typically start with all you #includes, no
 comment necessary
 */
 
 #include "Facilities.h"
 
 /*
-
-***after that, you could give this shitty code a general 
+Tip: after that, you could give this shitty code a general 
 description so people will know what it is without having to 
-look further***
+look further
+*/
+
+/*
 
 Calculator program:
 
@@ -22,7 +24,11 @@ by the user and calculates and displays the results..
 
 */
 
-
+/*
+Tip: Let's start by defining our user defined types (classes)
+and their member functions. This would typically be done
+elsewhere and each class would have its own file.
+*/
 
 class Token {
 public:
