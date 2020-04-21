@@ -1,54 +1,36 @@
-
-//
-// This is example code from Chapter 6.6 "Trying the first version" of
-// "Software - Principles and Practice using C++" by Bjarne Stroustrup
-//
-
 #include "Facilities.h"
-
-//------------------------------------------------------------------------------
 
 class Token {
 public:
-    char kind;        // what kind of token
-    double value;     // for numbers: a value 
-    Token(char ch)    // make a Token from a char
+    char kind;
+    double value;
+    Token(char ch)
         :kind(ch), value(0) { }
-    Token(char ch, double val)     // make a Token from a char and a double
+    Token(char ch, double val)
         :kind(ch), value(val) { }
 };
 
-//------------------------------------------------------------------------------
-
 class Token_stream {
 public:
-    Token_stream();   // make a Token_stream that reads from cin
-    Token get();      // get a Token (get() is defined elsewhere)
-    void putback(Token t);    // put a Token back
+    Token_stream();
+    Token get();
+    void putback(Token t);
 private:
-    bool full;        // is there a Token in the buffer?
-    Token buffer;     // here is where we keep a Token put back using putback()
+    bool full;
+    Token buffer;
 };
 
-//------------------------------------------------------------------------------
-
-// The constructor just sets full to indicate that the buffer is empty:
 Token_stream::Token_stream()
-    :full(false), buffer(0)    // no Token in buffer
+    :full(false), buffer(0)
 {
 }
 
-//------------------------------------------------------------------------------
-
-// The putback() member function puts its argument back into the Token_stream's buffer:
 void Token_stream::putback(Token t)
 {
     if (full) error("putback() into a full buffer");
-    buffer = t;       // copy t to buffer
-    full = true;      // buffer is now full
+    buffer = t;
+    full = true;
 }
-
-//------------------------------------------------------------------------------
 
 double calculate_factorial(int val)
 {
@@ -57,60 +39,61 @@ double calculate_factorial(int val)
     return val;
 }
 
-//------------------------------------------------------------------------------
-
 Token Token_stream::get()
 {
-    if (full) {       // do we already have a Token ready?
-        // remove token from buffer
+    if (full) {
         full = false;
         return buffer;
     }
 
     char ch;
-    cin >> ch;    // note that >> skips whitespace (space, newline, tab, etc.)
+    cin >> ch;
 
     switch (ch) {
-    case ';':    // for "print"
-    case 'q':    // for "quit"
-    case '!': case '(': case ')': case '+': case '-': case '*': case '/':
-        return Token(ch);        // let each character represent itself
+    case ';':
+    case 'q':
+    case '!': case '{': case '}': case '(': case ')': case '+': case '-': case '*': case '/':
+        return Token(ch);
     case '.':
     case '0': case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8': case '9':
     {
-        cin.putback(ch);         // put digit back into the input stream
+        cin.putback(ch);
         double val;
-        cin >> val;              // read a floating-point number
-        return Token('n', val);   // let 'n' represent "a number"
+        cin >> val;
+        return Token('n', val);
     }
     default:
         error("Bad token");
     }
 }
 
-//------------------------------------------------------------------------------
+double primary();
+double factorial();
+double term();
+double expression();
 
-Token_stream ts;        // provides get() and putback() 
+Token_stream ts;
 
-//------------------------------------------------------------------------------
-
-double expression();    // declaration so that primary() can call expression()
-
-//------------------------------------------------------------------------------
-
-double primary()     // read and evaluate a Primary
+double primary()
 {
     Token t = ts.get();
     switch (t.kind) {
-    case '(':    // handle '(' expression ')'
+    case '{':
+    {
+        double d = expression();
+        t = ts.get();
+        if (t.kind != '}') error("'}' expected");
+        return d;
+    }
+    case '(':
     {
         double d = expression();
         t = ts.get();
         if (t.kind != ')') error("')' expected");
         return d;
     }
-    case 'n':            // we use 'n' to represent a number
+    case 'n':
     {
         double d = t.value;
         return d;
@@ -127,9 +110,8 @@ double primary()     // read and evaluate a Primary
     }
     }
 }
-//------------------------------------------------------------------------------
 
-double secondary()
+double factorial()
 {
     double left = primary();
     Token t = ts.get();
@@ -185,18 +167,18 @@ catch (...) {
 
 double term()
 {
-    double left = secondary();
+    double left = factorial();
     Token t = ts.get();     // get the next token
 
     while (true) {
         switch (t.kind) {
         case '*':
-            left *= secondary();
+            left *= factorial();
             t = ts.get();
             break;
         case '/':
         {
-            double d = secondary();
+            double d = factorial();
             if (d == 0) error("divide by zero");
             left /= d;
             t = ts.get();
