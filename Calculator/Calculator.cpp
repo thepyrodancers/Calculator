@@ -1,139 +1,330 @@
+/*
+Tip: THE CODE BELOW IS EXAMPLE CODE. FOR LEARNING PURPOSES ONLY
+*/
 
-//
-// This is example code from Chapter 6.6 "Trying the first version" of
-// "Software - Principles and Practice using C++" by Bjarne Stroustrup
-//
+/*
+Tip: Tips are just that, tips. Everything else is comments I
+would call acceptable with my limited experience
+*/
+
+/*
+Tip: I think you typically start with all or your #includes, no
+comment necessary here unless one is unique. or you might group
+them. we'll get to that later
+*/
 
 #include "Facilities.h"
 
-//------------------------------------------------------------------------------
+/*
+Tip: after that, you could give this shitty code a general 
+description so people will know what it is without having to 
+look further
+*/
+
+/*
+
+Calculator program:
+
+This program reads simple mathematical expressions entered
+by the user and calculates and displays the results
+
+*/
+
+/*
+Tip: Let's start by defining our user defined types (classes)
+and their member functions. This would typically be done
+elsewhere and each class would have its own file
+*/
+
+/*
+Class: Token
+
+Description: This class will be used to hold user input as a
+two part object. One for its kind, the other for its value. 
+It comes equipped with two initializers, one for characters
+that have no value, the other for ones that do
+*/
 
 class Token {
 public:
-    char kind;        // what kind of token
-    double value;     // for numbers: a value 
-    Token(char ch)    // make a Token from a char
+    char kind;
+    double value;
+    Token(char ch)
         :kind(ch), value(0) { }
-    Token(char ch, double val)     // make a Token from a char and a double
+    Token(char ch, double val)
         :kind(ch), value(val) { }
 };
 
-//------------------------------------------------------------------------------
+/*
+Class: Token_stream
+
+Description: This class will be used as a buffer to hold a token.
+It comes equipped with two public functions, one to get a token
+from user input or the buffer. the other to put a token in the
+buffer. two private variables will be needed by for member functions
+to carry out their task. One is a Token that is the actual buffer,
+the other is a bool that keeps track of whether or not the buffer
+is full
+*/
 
 class Token_stream {
 public:
-    Token_stream();   // make a Token_stream that reads from cin
-    Token get();      // get a Token (get() is defined elsewhere)
-    void putback(Token t);    // put a Token back
+    Token_stream();
+    Token get();
+    void putback(Token t);
 private:
-    bool full;        // is there a Token in the buffer?
-    Token buffer;     // here is where we keep a Token put back using putback()
+    bool full;
+    Token buffer;
 };
 
-//------------------------------------------------------------------------------
+/*
+Tip: Don't quote me on this, but this class needs a constructor to initialize
+its private variable. I think constuctors are usually a good idea anyway
+*/
 
-// The constructor just sets full to indicate that the buffer is empty:
+/*
+Token_stream constructor: initializes buffer to empty
+*/
+
 Token_stream::Token_stream()
-    :full(false), buffer(0)    // no Token in buffer
+    :full(false), buffer(0)
 {
 }
 
-//------------------------------------------------------------------------------
-
-// The putback() member function puts its argument back into the Token_stream's buffer:
-void Token_stream::putback(Token t)
-{
-    if (full) error("putback() into a full buffer");
-    buffer = t;       // copy t to buffer
-    full = true;      // buffer is now full
-}
-
-//------------------------------------------------------------------------------
-
-double factorial(int val)
-{
-    for (int i = val-1; i > 0; i--)
-        val *= i;
-    return val;
-}
-
-//------------------------------------------------------------------------------
+/*
+Token_stream member function get(): gets a token from the buffer or a 
+character from the user input stream and assigns it to the appropriate 
+token
+*/
 
 Token Token_stream::get()
 {
-    if (full) {       // do we already have a Token ready?
-        // remove token from buffer
+    if (full) {
         full = false;
         return buffer;
     }
 
     char ch;
-    cin >> ch;    // note that >> skips whitespace (space, newline, tab, etc.)
+    cin >> ch;
 
     switch (ch) {
-    case ';':    // for "print"
-    case 'q':    // for "quit"
-    case '!': case '(': case ')': case '+': case '-': case '*': case '/':
-        return Token(ch);        // let each character represent itself
+    case ';':
+    case 'q':
+    case '!': case '{': case '}': case '(': case ')': case '+': case '-': case '*': case '/':
+        return Token(ch);
     case '.':
     case '0': case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8': case '9':
     {
-        cin.putback(ch);         // put digit back into the input stream
+        cin.putback(ch);
         double val;
-        cin >> val;              // read a floating-point number
-        return Token('n', val);   // let 'n' represent "a number"
+        cin >> val;
+        return Token('n', val);
     }
     default:
         error("Bad token");
     }
 }
 
-//------------------------------------------------------------------------------
+/*
+Token_stream member function putback(): puts a token in the buffer
+*/
 
-Token_stream ts;        // provides get() and putback() 
+void Token_stream::putback(Token t)
+{
+    if (full) error("putback() into a full buffer");
+    buffer = t;
+    full = true;
+}
 
-//------------------------------------------------------------------------------
+/*
+Tip: Let's go ahead a do some declaring. we'll go ahead and declare all of 
+our functions know, that way they can be written in any order and
+organized below. This is usually handled in a more sophisticated way, but 
+this will work for now
+*/
 
-double expression();    // declaration so that primary() can call expression()
+/*
+Basic functions
+*/
 
-//------------------------------------------------------------------------------
+double primary();
+double factorial();
+double term();
+double expression();
 
-double primary()     // read and evaluate a Primary
+/*
+utility functions //tip: this should grow
+*/
+
+double calculate_factorial(int val);
+
+/*
+Global variables
+*/
+
+Token_stream ts;
+
+/*
+Function: primary()
+
+Description: This is the last step in the grammar chain,
+it checks for primaries, which include {, (, and numbers.
+it will then either return the number to factorial() or evaluate 
+another expression and then return a number to term()
+*/
+
+double primary()
 {
     Token t = ts.get();
-    switch (t.kind) {
-    case '(':    // handle '(' expression ')'
+    switch (t.kind) 
     {
-        double d = expression();
-        t = ts.get();
-        if (t.kind != ')') error("')' expected");
-        t = ts.get();
-        if (t.kind == '!') d = factorial(d);
-        else ts.putback(t);
-        return d;
-    }
-    case 'n':            // we use 'n' to represent a number
-    {
-        double d = t.value;
-        Token t = ts.get();
-        if (t.kind == '!') d = factorial(d);
-        else ts.putback(t);
-        return d;
-    }
-
+    case '{':
+        {
+            double d = expression();
+            t = ts.get();
+            if (t.kind != '}') error("'}' expected");
+            return d;
+        }
+    case '(':
+        {
+            double d = expression();
+            t = ts.get();
+            if (t.kind != ')') error("')' expected");
+            return d;
+        }
+    case 'n':
+        {
+            double d = t.value;
+            return d;
+        }
     case 'q':
-    {
-        exit(0);
-        return 0;
-    }
+        {
+            exit(0);
+            return 0;
+        }
     default:
-    {
-        error("primary expected");
-    }
+        {
+            error("primary expected");
+        }
     }
 }
-//------------------------------------------------------------------------------
+
+/*
+Function: factorial()
+
+Description: This funcions is used to check if a '!' has been 
+found after a number has been read in or an expression has 
+been evaluated. if so, return the factorial of the number or
+evaluated expression to term()
+*/
+
+double factorial()
+{
+    double left = primary();
+    Token t = ts.get();
+
+    while (true)
+    {
+        switch (t.kind)
+        {
+        case '!':
+        {
+            left = calculate_factorial(left);
+            return left;
+        }
+        default:
+            ts.putback(t);
+            return left;
+        }
+        return left;
+    }
+}
+
+/*
+Function: term()
+
+Description: this function handles multiplication and division.
+if a * or / are found, evaluate for factorial and primary and
+multiply by the previous factorial or primary. return the result 
+to expression()
+*/
+
+double term()
+{
+    double left = factorial();
+    Token t = ts.get();
+
+    while (true) {
+        switch (t.kind) {
+        case '*':
+            left *= factorial();
+            t = ts.get();
+            break;
+        case '/':
+        {
+            double d = factorial();
+            if (d == 0) error("divide by zero");
+            left /= d;
+            t = ts.get();
+            break;
+        }
+        default:
+            ts.putback(t);
+            return left;
+        }
+    }
+}
+
+/*
+Function: expression()
+
+Description: This function handles + and -. if one is found, it appropriately
+combines the previous term() with the next term() and returns the result
+*/
+
+double expression()
+{
+    double left = term();
+    Token t = ts.get();
+    while (true) {
+        switch (t.kind) {
+        case '+':
+            left += term();
+            t = ts.get();
+            break;
+        case '-':
+            left -= term();
+            t = ts.get();
+            break;
+        default:
+            ts.putback(t);
+            return left;
+        }
+    }
+}
+
+/*
+Function: calculate_factorial()
+
+Description: This function takes a number, calculate its
+factorial, and returns its number
+*/
+
+double calculate_factorial(int val)
+{
+    for (int i = val - 1; i > 0; i--)
+        val *= i;
+    return val;
+}
+
+/*
+Function: main()
+
+Description: main function of program. displays instructions on load.
+Continuously runs program while input is valid. checks for quit characters
+and print characters.
+*/
 
 int main()
 try {
@@ -163,55 +354,3 @@ catch (...) {
     return 2;
 }
 
-//------------------------------------------------------------------------------
-
-double term()
-{
-    double left = primary();
-    Token t = ts.get();     // get the next token
-
-    while (true) {
-        switch (t.kind) {
-        case '*':
-            left *= primary();
-            t = ts.get();
-            break;
-        case '/':
-        {
-            double d = primary();
-            if (d == 0) error("divide by zero");
-            left /= d;
-            t = ts.get();
-            break;
-        }
-        default:
-            ts.putback(t);
-            return left;
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-
-double expression()
-{
-    double left = term();      // read and evaluate a Term
-    Token t = ts.get();     // get the next token
-    while (true) {
-        switch (t.kind) {
-        case '+':
-            left += term();    // evaluate Term and add
-            t = ts.get();
-            break;
-        case '-':
-            left -= term();    // evaluate Term and subtract
-            t = ts.get();
-            break;
-        default:
-            ts.putback(t);
-            return left;       // finally: no more + or -: return the answer
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
