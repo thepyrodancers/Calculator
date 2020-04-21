@@ -1,4 +1,28 @@
+/*
+THE CODE BELOW IS EXAMPLE CODE. FOR LEARNING PURPOSES ONLY
+*/
+
+/*
+I think you would typically start with all you #includes, no
+comment necessary
+*/
+
 #include "Facilities.h"
+
+/*
+
+***after that, you could give this shitty code a general 
+description so people will know what it is without having to 
+look further***
+
+Calculator program:
+
+This program reads simple mathematical expressions entered
+by the user and calculates and displays the results..
+
+*/
+
+
 
 class Token {
 public:
@@ -30,13 +54,6 @@ void Token_stream::putback(Token t)
     if (full) error("putback() into a full buffer");
     buffer = t;
     full = true;
-}
-
-double calculate_factorial(int val)
-{
-    for (int i = val-1; i > 0; i--)
-        val *= i;
-    return val;
 }
 
 Token Token_stream::get()
@@ -73,41 +90,43 @@ double factorial();
 double term();
 double expression();
 
+double calculate_factorial(int val);
+
 Token_stream ts;
 
 double primary()
 {
     Token t = ts.get();
-    switch (t.kind) {
+    switch (t.kind) 
+    {
     case '{':
-    {
-        double d = expression();
-        t = ts.get();
-        if (t.kind != '}') error("'}' expected");
-        return d;
-    }
+        {
+            double d = expression();
+            t = ts.get();
+            if (t.kind != '}') error("'}' expected");
+            return d;
+        }
     case '(':
-    {
-        double d = expression();
-        t = ts.get();
-        if (t.kind != ')') error("')' expected");
-        return d;
-    }
+        {
+            double d = expression();
+            t = ts.get();
+            if (t.kind != ')') error("')' expected");
+            return d;
+        }
     case 'n':
-    {
-        double d = t.value;
-        return d;
-    }
-
+        {
+            double d = t.value;
+            return d;
+        }
     case 'q':
-    {
-        exit(0);
-        return 0;
-    }
+        {
+            exit(0);
+            return 0;
+        }
     default:
-    {
-        error("primary expected");
-    }
+        {
+            error("primary expected");
+        }
     }
 }
 
@@ -133,7 +152,59 @@ double factorial()
     }
 }
 
-//------------------------------------------------------------------------------
+double term()
+{
+    double left = factorial();
+    Token t = ts.get();
+
+    while (true) {
+        switch (t.kind) {
+        case '*':
+            left *= factorial();
+            t = ts.get();
+            break;
+        case '/':
+        {
+            double d = factorial();
+            if (d == 0) error("divide by zero");
+            left /= d;
+            t = ts.get();
+            break;
+        }
+        default:
+            ts.putback(t);
+            return left;
+        }
+    }
+}
+
+double expression()
+{
+    double left = term();
+    Token t = ts.get();
+    while (true) {
+        switch (t.kind) {
+        case '+':
+            left += term();
+            t = ts.get();
+            break;
+        case '-':
+            left -= term();
+            t = ts.get();
+            break;
+        default:
+            ts.putback(t);
+            return left;
+        }
+    }
+}
+
+double calculate_factorial(int val)
+{
+    for (int i = val - 1; i > 0; i--)
+        val *= i;
+    return val;
+}
 
 int main()
 try {
@@ -163,55 +234,3 @@ catch (...) {
     return 2;
 }
 
-//------------------------------------------------------------------------------
-
-double term()
-{
-    double left = factorial();
-    Token t = ts.get();     // get the next token
-
-    while (true) {
-        switch (t.kind) {
-        case '*':
-            left *= factorial();
-            t = ts.get();
-            break;
-        case '/':
-        {
-            double d = factorial();
-            if (d == 0) error("divide by zero");
-            left /= d;
-            t = ts.get();
-            break;
-        }
-        default:
-            ts.putback(t);
-            return left;
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-
-double expression()
-{
-    double left = term();      // read and evaluate a Term
-    Token t = ts.get();     // get the next token
-    while (true) {
-        switch (t.kind) {
-        case '+':
-            left += term();    // evaluate Term and add
-            t = ts.get();
-            break;
-        case '-':
-            left -= term();    // evaluate Term and subtract
-            t = ts.get();
-            break;
-        default:
-            ts.putback(t);
-            return left;       // finally: no more + or -: return the answer
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
