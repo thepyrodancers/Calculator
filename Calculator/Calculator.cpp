@@ -165,6 +165,15 @@ Global variables
 
 Token_stream ts;
 
+/*
+Function: primary()
+
+Description: This is the last step in the grammar chain,
+it checks for primaries, which include {, (, and numbers.
+it will then either return the number to factorial() or evaluate 
+another expression and then return a number to term()
+*/
+
 double primary()
 {
     Token t = ts.get();
@@ -201,6 +210,15 @@ double primary()
     }
 }
 
+/*
+Function: factorial()
+
+Description: This funcions is used to check if a '!' has been 
+found after a number has been read in or an expression has 
+been evaluated. if so, return the factorial of the number or
+evaluated expression to term()
+*/
+
 double factorial()
 {
     double left = primary();
@@ -222,6 +240,15 @@ double factorial()
         return left;
     }
 }
+
+/*
+Function: term()
+
+Description: this function handles multiplication and division.
+if a * or / are found, evaluate for factorial and primary and
+multiply by the previous factorial or primary. return the result 
+to expression()
+*/
 
 double term()
 {
@@ -249,6 +276,13 @@ double term()
     }
 }
 
+/*
+Function: expression()
+
+Description: This function handles + and -. if one is found, it appropriately
+combines the previous term() with the next term() and returns the result
+*/
+
 double expression()
 {
     double left = term();
@@ -270,12 +304,27 @@ double expression()
     }
 }
 
+/*
+Function: calculate_factorial()
+
+Description: This function takes a number, calculate its
+factorial, and returns its number
+*/
+
 double calculate_factorial(int val)
 {
     for (int i = val - 1; i > 0; i--)
         val *= i;
     return val;
 }
+
+/*
+Function: main()
+
+Description: main function of program. displays instructions on load.
+Continuously runs program while input is valid. checks for quit characters
+and print characters.
+*/
 
 int main()
 try {
