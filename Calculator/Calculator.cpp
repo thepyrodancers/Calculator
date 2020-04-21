@@ -3,8 +3,14 @@ Tip: THE CODE BELOW IS EXAMPLE CODE. FOR LEARNING PURPOSES ONLY
 */
 
 /*
-Tip: I think you would typically start with all you #includes, no
-comment necessary
+Tip: Tips are just that, tips. Everything else is comments I
+would call acceptable with my limited experience
+*/
+
+/*
+Tip: I think you typically start with all or your #includes, no
+comment necessary here unless one is unique. or you might group
+them. we'll get to that later
 */
 
 #include "Facilities.h"
@@ -20,14 +26,23 @@ look further
 Calculator program:
 
 This program reads simple mathematical expressions entered
-by the user and calculates and displays the results..
+by the user and calculates and displays the results
 
 */
 
 /*
 Tip: Let's start by defining our user defined types (classes)
 and their member functions. This would typically be done
-elsewhere and each class would have its own file.
+elsewhere and each class would have its own file
+*/
+
+/*
+Class: Token
+
+Description: This class will be used to hold user input as a
+two part object. One for its kind, the other for its value. 
+It comes equipped with two initializers, one for characters
+that have no value, the other for ones that do
 */
 
 class Token {
@@ -40,6 +55,18 @@ public:
         :kind(ch), value(val) { }
 };
 
+/*
+Class: Token_stream
+
+Description: This class will be used as a buffer to hold a token.
+It comes equipped with two public functions, one to get a token
+from user input or the buffer. the other to put a token in the
+buffer. two private variables will be needed by for member functions
+to carry out their task. One is a Token that is the actual buffer,
+the other is a bool that keeps track of whether or not the buffer
+is full
+*/
+
 class Token_stream {
 public:
     Token_stream();
@@ -50,17 +77,25 @@ private:
     Token buffer;
 };
 
+/*
+Tip: Don't quote me on this, but this class needs a constructor to initialize
+its private variable. I think constuctors are usually a good idea anyway
+*/
+
+/*
+Token_stream constructor: initializes buffer to empty
+*/
+
 Token_stream::Token_stream()
     :full(false), buffer(0)
 {
 }
 
-void Token_stream::putback(Token t)
-{
-    if (full) error("putback() into a full buffer");
-    buffer = t;
-    full = true;
-}
+/*
+Token_stream member function get(): gets a token from the buffer or a 
+character from the user input stream and assigns it to the appropriate 
+token
+*/
 
 Token Token_stream::get()
 {
@@ -91,12 +126,42 @@ Token Token_stream::get()
     }
 }
 
+/*
+Token_stream member function putback(): puts a token in the buffer
+*/
+
+void Token_stream::putback(Token t)
+{
+    if (full) error("putback() into a full buffer");
+    buffer = t;
+    full = true;
+}
+
+/*
+Tip: Let's go ahead a do some declaring. we'll go ahead and declare all of 
+our functions know, that way they can be written in any order and
+organized below. This is usually handled in a more sophisticated way, but 
+this will work for now
+*/
+
+/*
+Basic functions
+*/
+
 double primary();
 double factorial();
 double term();
 double expression();
 
+/*
+utility functions //tip: this should grow
+*/
+
 double calculate_factorial(int val);
+
+/*
+Global variables
+*/
 
 Token_stream ts;
 
