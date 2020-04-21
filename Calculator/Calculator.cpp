@@ -116,7 +116,15 @@ double primary()
     }
     case 'n':         
     {
-        return t.value;  
+        return t.value; 
+    }
+    case '-':
+    {
+        return - primary();
+    }
+    case '+':
+    {
+        return primary();
     }
     default:
         error("primary expected");
@@ -234,11 +242,11 @@ try {
 }
 catch (exception& e) {
     cerr << e.what() << endl;
-    keep_window_open("~1");
+    keep_window_open("~~");
     return 1;
 }
 catch (...) {
     cerr << "exception \n";
-    keep_window_open("~2");
+    keep_window_open("~~");
     return 2;
 }
