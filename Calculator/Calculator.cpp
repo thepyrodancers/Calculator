@@ -58,16 +58,15 @@ Token Token_stream::get()
     }
     char ch;
     cin >> ch; 
-    switch (ch) {
-        case '=': 
-        case 'x': 
-        case '!': 
-        case '{': case '}': case '(': case ')': case '+': case '-': case '*': case '/':
+    switch (ch) 
+    {
+        case 'x': case '=': case '!': case '{': case '}': case '(':
+        case ')': case '+': case '-': case '*': case '/': case '%':
         {
             return Token{ch}; 
         }
-        case '.':
-        case '0': case '1': case '2': case '3': case '4':
+        
+        case '.': case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
         { 
             cin.putback(ch); 
@@ -100,34 +99,34 @@ double primary()
     
     Token t = ts.get();
     switch (t.kind) {
-    case '{':
-    {
-        double c = expression();
-        t = ts.get();
-        if (t.kind != '}') error("'}' expected");
-        return c;
-    }
-    case '(':    
-    {
-        double d = expression();
-        t = ts.get();
-        if (t.kind != ')') error("')' expected");
-        return d;
-    }
-    case 'n':         
-    {
-        return t.value; 
-    }
-    case '-':
-    {
-        return - primary();
-    }
-    case '+':
-    {
-        return primary();
-    }
-    default:
-        error("primary expected");
+        case '{':
+        {
+            double c = expression();
+            t = ts.get();
+            if (t.kind != '}') error("'}' expected");
+            return c;
+        }
+        case '(':    
+        {
+            double d = expression();
+            t = ts.get();
+            if (t.kind != ')') error("')' expected");
+            return d;
+        }
+        case 'n':         
+        {
+            return t.value; 
+        }
+        case '-':
+        {
+            return - primary();
+        }
+        case '+':
+        {
+            return primary();
+        }
+        default:
+            error("primary expected");
     }
 }
 
@@ -142,19 +141,19 @@ double factorial() {
     while (true) {
 
         switch (t.kind) {
-        case '!':
-        {
-            int x = left;
-            int k = (x - 1);
-            double f = x;
-            for (int i = 0; i < k; ++i) {
-                f *= (--x);
+            case '!':
+            {
+                int x = left;
+                int k = (x - 1);
+                double f = x;
+                for (int i = 0; i < k; ++i) {
+                    f *= (--x);
+                }
+                return f;
             }
-            return f;
-        }
-        default:
-            ts.putback(t);
-            return left;
+            default:
+                ts.putback(t);
+                return left;
         }
     }
 }
@@ -169,23 +168,35 @@ double term()
     double left = factorial();
     Token t = ts.get();
     while (true) {
-        switch (t.kind) {
-        case '*':
+        switch (t.kind) 
         {
-            left *= factorial();
-            t = ts.get();
-            break;
-        }
-        case '/':
-        { double d = factorial();
-        if (d == 0) error("divide by zero");
-        left /= d;
-        t = ts.get();
-        break;
-        }
-        default:
-            ts.putback(t); 
-            return left;
+            case '*':
+            {
+                left *= factorial();
+                t = ts.get();
+                break;
+            }
+            case '/':
+            {   
+                double d = factorial();
+                if (d == 0) error("divide by zero");
+                left /= d;
+                t = ts.get();
+                break;
+            }
+            case '%':
+            { 
+                int i1 = narrow_cast<int>(left);
+                int i2 = narrow_cast<int>(primary());
+                if (i2 == 0) error("%: divide by zero");
+                left = i1 % i2;
+                t = ts.get();
+                break;
+            }
+
+            default:
+                ts.putback(t); 
+                return left;
         }
     }
 }
@@ -202,17 +213,21 @@ double expression()
     Token t = ts.get(); 
     while (true) {
         switch (t.kind) {
-        case '+':
-            left += term(); 
-            t = ts.get();
-            break;
-        case '-':
-            left -= term(); 
-            t = ts.get();
-            break;
-        default:
-            ts.putback(t); 
-            return left; 
+            case '+':
+            {
+                left += term();
+                t = ts.get();
+                break;
+            }
+            case '-':
+            {
+                left -= term();
+                t = ts.get();
+                break;
+            }
+            default:
+                ts.putback(t); 
+                return left; 
         }
     }
 }
