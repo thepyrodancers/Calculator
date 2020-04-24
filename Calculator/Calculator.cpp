@@ -1,8 +1,45 @@
+/*
+ Aaron's Calculator Code
 
+This program implements a basic expression calculator.
+Input from cin; output to cout.
+The grammar for input is :
+Statement:
+    Expression
+    Print
+    Quit
+Print :
+    ;
+Quit  :
+    q
+Expression :
+    Term
+    Expression + Term
+    Expression – Term
+Term :
+    Primary
+    Term * Primary
+    Term / Primary
+    Term % Primary
+Primary :
+    Number
+    (Expression)
+    – Primary
+    + Primary
+Number :
+    floating - point - literal
 
-// Aaron's Calculator Code 
+Input comes from cin through the Token_stream called ts.
+*/
 
 #include "Facilities.h"
+
+//-----------------------------------------------------------------------------
+
+const char number = 'n';
+const char quit = 'q';
+const char print = '=';
+const string prompt = ">";
 
 //------------------------------------------------------------------------------
 // Defines Token(ch) and Token (ch,val)
@@ -24,11 +61,29 @@ public:
     Token_stream(); 
     Token get(); 
     void putback(Token t); 
+    void ignore(char c);
 private:
     bool full; // Tracks if buffer can be overwritten or not
     Token buffer; // Receives token from .putback(Token t)
 
 };
+
+//------------------------------------------------------------------------------
+
+void Token_stream::ignore(char c)
+{
+    if (full && c == buffer.kind) {
+        full = false;
+        return;
+    }
+    full = false;
+    char ch = 0;
+    while (cin >> ch) {
+        if (ch == c) {
+            return;
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 
@@ -60,19 +115,28 @@ Token Token_stream::get()
     cin >> ch; 
     switch (ch) 
     {
-        case 'x': case '=': case '!': case '{': case '}': case '(':
-        case ')': case '+': case '-': case '*': case '/': case '%':
+        case quit:
+        case print: 
+        case '!': 
+        case '{': 
+        case '}': 
+        case '(':
+        case ')':
+        case '+':
+        case '-': 
+        case '*': 
+        case '/': 
+        case '%':
         {
-            return Token{ch}; 
+            return Token{ ch };
         }
-        
         case '.': case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
         { 
             cin.putback(ch); 
             double val;
             cin >> val; 
-            return Token{'n',val}; 
+            return Token{number,val}; 
         }
         default:
         {
@@ -113,7 +177,7 @@ double primary()
             if (t.kind != ')') error("')' expected");
             return d;
         }
-        case 'n':         
+        case number:         
         {
             return t.value; 
         }
@@ -234,32 +298,53 @@ double expression()
 
 //------------------------------------------------------------------------------
 
+void clean_up_mess()
+{
+    ts.ignore(print);
+}
+
+//------------------------------------------------------------------------------
+
+void calculate()
+{
+    while (cin) 
+    try {
+        cout << prompt;
+        Token t = ts.get();
+        while (t.kind == print) {
+            t = ts.get();
+        }
+        if (t.kind == quit) {
+            return;
+        }
+        ts.putback(t);
+        cout << " " << expression() << '\n';
+    }
+    catch (exception& e) {
+        cerr << e.what() << '\n';
+        clean_up_mess();
+    }
+}
+
+//------------------------------------------------------------------------------
+
 
 int main()
 try {
-
     cout << "Welcome to our simple calculator. \nPlease enter expressions using floating-point numbers.\n";
     cout << "You may use '+' for addition, '-' for subtraction, '*' for multiplication, and '/' for division.\n";
     cout << "You may use '(', ')','{', & '}' to denote modifications to the normal order of mathematical operations.\n";
-    cout << "End your expressions with '=' to get the result.\n\n";
-    cout << ">";
-    double val = 0;
-    while (cin) {
-        Token t = ts.get();
-        if (t.kind == 'x') break; 
-        if (t.kind == '=') 
-            cout << " " << val << '\n';
-        else
-            ts.putback(t);
-        val = expression();
-    }
-    keep_window_open("~0");
+    cout << "End your expressions with '=' to get the result. Enter 'q' to quit.\n\n";
+    
+    calculate();
+    keep_window_open();
+    return 0;
 }
 catch (exception& e) {
     cerr << e.what() << endl;
     keep_window_open("~~");
     return 1;
-}
+} 
 catch (...) {
     cerr << "exception \n";
     keep_window_open("~~");
