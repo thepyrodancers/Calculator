@@ -4,14 +4,13 @@
 This program implements a basic expression calculator.
 Input from cin; output to cout.
 The grammar for input is :
+Calculation:
+    Statement
+    Print ';'
+    Quit 'q'
 Statement:
+    Declaration
     Expression
-    Print
-    Quit
-Print :
-    ;
-Quit  :
-    q
 Expression :
     Term
     Expression + Term
@@ -21,11 +20,16 @@ Term :
     Term * Primary
     Term / Primary
     Term % Primary
+Factorial:
+    Primary()!
 Primary :
     Number
     (Expression)
     – Primary
     + Primary
+    Name (variable)
+    sqrt(Expression)
+    pow(x,i)
 Number :
     floating - point - literal
 
@@ -37,7 +41,9 @@ Input comes from cin through the Token_stream called ts.
 
 
 //------------------------------------------------------------------------------
-// Defines Token(ch), Token (ch, val), and Token (ch, string)
+// Defines 3 Tokens of different types: a character token "Token(char ch)" with no value,
+// a number token "Token(char ch, double val)" with an associated numeric value,
+// and a string token "Token(char ch, string n)" with an associated name string.
 
 class Token {
 public:
@@ -53,6 +59,12 @@ public:
 };
 
 //------------------------------------------------------------------------------
+// Creates a "Token buffer" where a token can be temporarily placed or held for later evaluation.
+// The next token read from the input stream can be retrieved using Token get(),
+// a token can be placed back in the buffer after analyis with putback(Token t), 
+// and a token can be overwritten or ignored with ignore(char c)
+// When "bool full" is true a token is currently in the buffer and can't be overwritten
+// When "bool full" is set to false the current token can be overwritten with the next token
 
 class Token_stream {
 public:
@@ -61,12 +73,13 @@ public:
     void putback(Token t); 
     void ignore(char c);
 private:
-    bool full; // Tracks if buffer can be overwritten or not
-    Token buffer; // Receives token from .putback(Token t)
+    bool full;
+    Token buffer;
 
 };
 
 //------------------------------------------------------------------------------
+// This constructor initializes Token_stream's buffer to be empty and overwritable
 
 Token_stream::Token_stream()
     :full(false), buffer(0)
@@ -90,8 +103,8 @@ const string powkey = "pow";
 
 
 //------------------------------------------------------------------------------
-// Evaluates the buffer and assembles and returns Token(ch), Token(ch,val), Token  or Token depending 
-// on character input
+// Evaluates the buffer and assembles and returns a Token(char ch), Token(char ch , double val),
+// or Token(char ch, string n) depending on the input being read
 
 Token Token_stream::get()
 {
@@ -153,6 +166,8 @@ Token Token_stream::get()
 }
 
 //------------------------------------------------------------------------------
+// The current token is placed back into the buffer after evaluation so that it may
+// further evaluated by proceeding functions
 
 void Token_stream::putback(Token t)
 {
@@ -162,6 +177,9 @@ void Token_stream::putback(Token t)
 }
 
 //------------------------------------------------------------------------------
+// The character passed to this function is evaluated against the current token in
+// the buffer and if they are a match 'bool full' is set to false which allows the
+// buffer to be overwritten. This essentially ignores the passed character in an evaluation
 
 void Token_stream::ignore(char c)
 {
@@ -179,6 +197,8 @@ void Token_stream::ignore(char c)
 }
 
 //------------------------------------------------------------------------------
+// Creates a variable consisting of a string (which must start with an alpha character)
+// and a numeric value (which may be the result of an expression)
 
 class Variable {
 public:
@@ -189,10 +209,13 @@ public:
 };
 
 //------------------------------------------------------------------------------
+// A table for holding user declared variables
 
 vector<Variable> var_table;
 
 //------------------------------------------------------------------------------
+// Searches through the variable table to find the inputted variable and returns its
+// corresponding numeric value. The variable must be previously declared by the user
 
 double get_value(string s)
 {
@@ -205,6 +228,7 @@ double get_value(string s)
 }
 
 //------------------------------------------------------------------------------
+// Associates a numeric value with a user declared variable string, 
 
 void set_value(string s, double d)
 {
@@ -218,6 +242,8 @@ void set_value(string s, double d)
 }
 
 //------------------------------------------------------------------------------
+// Checks to see if a string  has already been declared as a variable
+// A specific string my only be declared as a variable once
 
 bool is_declared(string var)
 {
@@ -229,6 +255,8 @@ bool is_declared(string var)
 }
 
 //------------------------------------------------------------------------------
+// Adds a new user defined string variable to the table of variables if
+// that string hasn't already been declared by the user previously
 
 double define_name(string var, double val)
 {
@@ -240,28 +268,31 @@ double define_name(string var, double val)
 }
 
 //------------------------------------------------------------------------------
-
-
+// Initializes the Token_stream "ts"
 
 Token_stream ts;
 
 //------------------------------------------------------------------------------
+// Initializes the expression() function for SOME REASON THAT I MUST FIND AND ADD HERE!!!!
 
 double expression();
 
 //------------------------------------------------------------------------------
+// Returns the square root of the user's inputted expression
 
 double squareroot()
 {
     double e = expression();
-    double f = sqrt(e);
     if (e < 0) {
         error("Square Root of Negative");
     }
-    return f;
+    return sqrt(e);
 }
 
 //------------------------------------------------------------------------------
+// Returns input 'x' to the power of input 'i'
+// The '(', ')', and ',' in the input "pow(x,i)" are ignored and not treated 
+// as an expression. Only the user's inputted numeric values are used in the function
 
 double powerfunc()
 {
@@ -283,6 +314,9 @@ double powerfunc()
 // Gets next token from the token stream and evaluates expressions grouped within
 // '{}' or '()' as well as single number expressions and returns the value 
 // for the grouped expressions or single numbers
+// Also handles negative numbers by returning -primary() when a '-' is used before a number
+// Returns the numeric value for a user defined variable string when it is used in an expression
+// Calls squareroot() and powerfunc() when the user has inputted "sqrt()" or "pow()"
 
 double primary()
 {
@@ -365,9 +399,9 @@ double factorial() {
 }
 
 //------------------------------------------------------------------------------
-// Gets next token from token stream and evaluates a term. Calculates multiplication or division
-// of a term by a factorial or primary and returns the result. All tokens other than '*' and '/'
-// are put back into the token stream
+// Gets next token from token stream and evaluates a term. Calculates multiplication, division,
+// or modulo of a term by a factorial or primary and returns the result. All tokens other than '*', '/',
+// and '%' are put back into the token stream
 
 double term()
 {
@@ -431,10 +465,6 @@ double expression()
                 t = ts.get();
                 break;
             }
-            case ',':
-            {
-                return left, t, narrow_cast<int> (term());
-            }
             default:
                 ts.putback(t); 
                 return left; 
@@ -443,6 +473,10 @@ double expression()
 }
 
 //------------------------------------------------------------------------------
+// Creates user declared string variable with its associated numerical value
+// and passes it to define_name() to be added to the variable table
+// Checks that user has properly declared the variable with the format "x = expression"
+// Returns the numerical value of the user defined string variable
 
 double declaration()
 {
@@ -461,6 +495,9 @@ double declaration()
 }
 
 //------------------------------------------------------------------------------
+// Gets the next token from the token stream and if it is a "let" token (i.e. user input "let x = 3")
+// returns declaration(), which creates a user declared variable from the user's inputted string and numeric value
+// All other tokens are returned to the token stream for further evaluation
 
 double statement()
 {
@@ -477,6 +514,10 @@ double statement()
 }
 
 //------------------------------------------------------------------------------
+// This is called when an error is caught within an expression so that any following expressions
+// are evaluated without the erroneous expression's 'print' character included in the evaluation
+// Passes the 'print' character ';' to ignore() ensuring it is not included in proceeding 
+// expression evaluations 
 
 void clean_up_mess()
 {
@@ -484,6 +525,13 @@ void clean_up_mess()
 }
 
 //------------------------------------------------------------------------------
+// Gives the user an input prompt and begins creation, evaluation, and storing of tokens
+// in the buffer 
+// Outputs result of each individual expression ended with the "print" character ';'
+// Results of expressions are evaluated beginning with the call of statement()
+// Checks for "quit" character 'q' and ends program when it is used
+// Checks for errors in individual expressions and outputs error messages while allowing
+// the evaluation of all other expressions by calling clean_up_mess() 
 
 void calculate()
 {
@@ -507,6 +555,10 @@ void calculate()
 }
 
 //------------------------------------------------------------------------------
+// Gives user a summary of the calculator program and states the rules/instructions for use
+// Defines mathematical constants such as "pi"
+// Begins the evaluation of user input by calling calculate()
+// Handles all exceptions and errors outside of those defined within the calculator program
 
 int main()
 try {
