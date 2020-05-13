@@ -282,10 +282,22 @@ double expression();
 
 double squareroot()
 {
+    Token t = ts.get();
+    if (t.kind != '(') {
+        error("'(' expected");
+    }
+    ts.putback(t);
+    ts.ignore('(');
     double e = expression();
     if (e < 0) {
         error("Square Root of Negative");
     }
+    Token t2 = ts.get();
+    if (t2.kind != ')') {
+        error("')' expected");
+    }
+    ts.putback(t2);
+    ts.ignore(')');
     return sqrt(e);
 }
 
@@ -296,13 +308,25 @@ double squareroot()
 
 double powerfunc()
 {
-    
-    ts.ignore('(');
     Token t = ts.get();
-    double x = t.value;
-    ts.ignore(',');
+    if (t.kind != '(') {
+        error("'(' expected");
+    }
+    ts.putback(t);
+    ts.ignore('(');
+    double x = expression();
     Token t2 = ts.get();
-    int i = narrow_cast<int>(t2.value);
+    if (t2.kind != ',') {
+        error("',' expected");
+    }
+    ts.putback(t2);
+    ts.ignore(',');
+    int i = narrow_cast<int>(expression());
+    Token t3 = ts.get();
+    if (t3.kind != ')') {
+        error("')' expected");
+    }
+    ts.putback(t3);
     ts.ignore(')');
     return pow(x, i);
 }
