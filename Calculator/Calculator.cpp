@@ -36,8 +36,16 @@ Number :
 Input comes from cin through the Token_stream called ts.
 */
 
-#include "Facilities.h"
+#include <iostream>
+#include <vector>
 #include "Variable.h"
+#include "Errors.h"
+
+using std::cin;
+using std::cout;
+using std::vector;
+using std::cerr;
+using std::exception;
 
 //------------------------------------------------------------------------------
 // Defines 3 Tokens of different types: a character token "Token(char ch)" with no value,
@@ -586,16 +594,13 @@ try {
     define_name("k", 1000);
 
     calculate();
-    keep_window_open();
     return 0;
 }
 catch (exception& e) {
-    cerr << e.what() << endl;
-    keep_window_open("~~");
+    cerr << e.what() << '\n';
     return 1;
 } 
 catch (...) {
     cerr << "exception \n";
-    keep_window_open("~~");
     return 2;
 }

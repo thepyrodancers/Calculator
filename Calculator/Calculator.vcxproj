@@ -150,6 +150,7 @@
     <ClCompile Include="Calculator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Errors.h" />
     <ClInclude Include="Facilities.h" />
     <ClInclude Include="Variable.h" />
   </ItemGroup>
