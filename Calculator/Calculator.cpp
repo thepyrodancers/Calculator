@@ -36,27 +36,18 @@ Number :
 Input comes from cin through the Token_stream called ts.
 */
 
-#include "Facilities.h"
+#include <iostream>
+#include <vector>
+#include "Variable.h"
+#include "Errors.h"
+#include "Gconst.h"
+#include "Token.h"
 
-
-
-//------------------------------------------------------------------------------
-// Defines 3 Tokens of different types: a character token "Token(char ch)" with no value,
-// a number token "Token(char ch, double val)" with an associated numeric value,
-// and a string token "Token(char ch, string n)" with an associated name string.
-
-class Token {
-public:
-    char kind;
-    double value;
-    string name;
-    Token(char ch)
-        :kind(ch), value(0) { }
-    Token(char ch, double val)     
-        :kind(ch), value(val) { }
-    Token(char ch, string n)
-        :kind(ch), name(n) { } 
-};
+using std::cin;
+using std::cout;
+using std::vector;
+using std::cerr;
+using std::exception;
 
 //------------------------------------------------------------------------------
 // Creates a "Token buffer" where a token can be temporarily placed or held for later evaluation.
@@ -85,21 +76,6 @@ Token_stream::Token_stream()
     :full(false), buffer(0)
 {
 }
-
-//-----------------------------------------------------------------------------
-
-const char number = 'n';
-const char quit = 'q';
-const char print = ';';
-const string prompt = ">";
-const string result = "=";
-const char name = 'a';
-const char let = 'L';
-const string declkey = "let";
-const char root = 's';
-const string sqrtkey = "sqrt";
-const char power = 'p';
-const string powkey = "pow";
 
 
 //------------------------------------------------------------------------------
@@ -195,18 +171,6 @@ void Token_stream::ignore(char c)
         }
     }
 }
-
-//------------------------------------------------------------------------------
-// Creates a variable consisting of a string (which must start with an alpha character)
-// and a numeric value (which may be the result of an expression)
-
-class Variable {
-public:
-    string name;
-    double value;
-    Variable(string n, double val)
-        : name(n), value(val) {}
-};
 
 //------------------------------------------------------------------------------
 // A table for holding user declared variables
@@ -599,16 +563,13 @@ try {
     define_name("k", 1000);
 
     calculate();
-    keep_window_open();
     return 0;
 }
 catch (exception& e) {
-    cerr << e.what() << endl;
-    keep_window_open("~~");
+    cerr << e.what() << '\n';
     return 1;
 } 
 catch (...) {
     cerr << "exception \n";
-    keep_window_open("~~");
     return 2;
 }
