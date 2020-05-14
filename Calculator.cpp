@@ -45,6 +45,8 @@ using std::cout;
 using std::cerr;
 using std::exception;
 
+
+
 //------------------------------------------------------------------------------
 // Gives user a summary of the calculator program and states the rules/instructions for use
 // Defines mathematical constants such as "pi"
