@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 const string prompt = ">";
 const string result = "=";
 const string declkey = "let";

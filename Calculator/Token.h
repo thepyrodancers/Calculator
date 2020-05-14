@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 //------------------------------------------------------------------------------
 // Defines 3 Tokens of different types: a character token "Token(char ch)" with no value,
 // a number token "Token(char ch, double val)" with an associated numeric value,
