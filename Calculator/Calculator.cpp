@@ -40,6 +40,7 @@ Input comes from cin through the Token_stream called ts.
 #include <vector>
 #include "Variable.h"
 #include "Errors.h"
+#include "Gconst.h"
 
 using std::cin;
 using std::cout;
@@ -95,19 +96,11 @@ Token_stream::Token_stream()
 
 //-----------------------------------------------------------------------------
 
-const char number = 'n';
-const char quit = 'q';
-const char print = ';';
 const string prompt = ">";
 const string result = "=";
-const char name = 'a';
-const char let = 'L';
 const string declkey = "let";
-const char root = 's';
 const string sqrtkey = "sqrt";
-const char power = 'p';
 const string powkey = "pow";
-
 
 //------------------------------------------------------------------------------
 // Evaluates the buffer and assembles and returns a Token(char ch), Token(char ch , double val),
