@@ -41,30 +41,13 @@ Input comes from cin through the Token_stream called ts.
 #include "Variable.h"
 #include "Errors.h"
 #include "Gconst.h"
+#include "Token.h"
 
 using std::cin;
 using std::cout;
 using std::vector;
 using std::cerr;
 using std::exception;
-
-//------------------------------------------------------------------------------
-// Defines 3 Tokens of different types: a character token "Token(char ch)" with no value,
-// a number token "Token(char ch, double val)" with an associated numeric value,
-// and a string token "Token(char ch, string n)" with an associated name string.
-
-class Token {
-public:
-    char kind;
-    double value;
-    string name;
-    Token(char ch)
-        :kind(ch), value(0) { }
-    Token(char ch, double val)     
-        :kind(ch), value(val) { }
-    Token(char ch, string n)
-        :kind(ch), name(n) { } 
-};
 
 //------------------------------------------------------------------------------
 // Creates a "Token buffer" where a token can be temporarily placed or held for later evaluation.

@@ -153,6 +153,7 @@
     <ClInclude Include="Errors.h" />
     <ClInclude Include="Facilities.h" />
     <ClInclude Include="Gconst.h" />
+    <ClInclude Include="Token.h" />
     <ClInclude Include="Variable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
