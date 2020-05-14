@@ -24,6 +24,16 @@ bool is_declared(string var);
 double define_name(string var, double val);
 
 //------------------------------------------------------------------------------
+// Comments here!!!!!
+
+double braces();
+
+//------------------------------------------------------------------------------
+// comments here!!!!!
+
+double parenthesis();
+
+//------------------------------------------------------------------------------
 // Returns the square root of the user's inputted expression
 
 double squareroot();
@@ -34,6 +44,11 @@ double squareroot();
 // as an expression. Only the user's inputted numeric values are used in the function
 
 double powerfunc();
+
+//------------------------------------------------------------------------------
+// comments here!!!
+
+double calculatefac(double fac);
 
 //------------------------------------------------------------------------------
 // Gets next token from the token stream and evaluates expressions grouped within

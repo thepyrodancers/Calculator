@@ -23,6 +23,11 @@ vector<Variable> var_table;
 
 Token_stream ts;
 
+
+//------------------------------------------------------------------------------
+// Calculation Functions Section
+//------------------------------------------------------------------------------
+
 double get_value(string s)
 {
     for (int i = 0; i < var_table.size(); ++i) {
@@ -60,6 +65,26 @@ double define_name(string var, double val)
     }
     var_table.push_back(Variable{ var, val });
     return val;
+}
+
+double parenthesis()
+{
+    double c = expression();
+    Token t = ts.get();
+    if (t.kind != ')') {
+        error("')' expected");
+    }
+    return c;
+}
+
+double braces()
+{
+    double c = expression();
+    Token t = ts.get();
+    if (t.kind != '}') {
+        error("'}' expected");
+    }
+    return c;
 }
 
 double squareroot()
@@ -108,28 +133,34 @@ double powerfunc()
     return pow(x, i);
 }
 
+double calculatefac(double fact)
+{
+    
+    double x = fact;
+    double f = x;
+    for (int i = 0; i < fact - 1; ++i) {
+        f *= --x;
+    }
+    return f;
+}
+
+
+//------------------------------------------------------------------------------
+// Grammar Functions Section
+//------------------------------------------------------------------------------
+
+
 double primary()
 {
-
     Token t = ts.get();
     switch (t.kind) {
     case '{':
     {
-        double c = expression();
-        t = ts.get();
-        if (t.kind != '}') {
-            error("'}' expected");
-        }
-        return c;
+        return braces();
     }
     case '(':
     {
-        double d = expression();
-        t = ts.get();
-        if (t.kind != ')') {
-            error("')' expected");
-        }
-        return d;
+        return parenthesis();
     }
 
     case '-':
@@ -170,12 +201,7 @@ double factorial()
         switch (t.kind) {
         case '!':
         {
-            double x = left;
-            double f = x;
-            for (int i = 0; i < left - 1; ++i) {
-                f *= --x;
-            }
-            return f;
+            return calculatefac(left);
         }
         default:
             ts.putback(t);
