@@ -94,15 +94,6 @@ Token_stream::Token_stream()
 {
 }
 
-//------------------------------------------------------------------------------
-
-const char number = 'n';
-const char quit = 'q';
-const char print = ';';
-const char name = 'a';
-const char let = 'L';
-const char root = 's';
-const char power = 'p';
 
 //------------------------------------------------------------------------------
 // Evaluates the buffer and assembles and returns a Token(char ch), Token(char ch , double val),
