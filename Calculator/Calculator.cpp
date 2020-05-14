@@ -37,16 +37,11 @@ Input comes from cin through the Token_stream called ts.
 */
 
 #include <iostream>
-#include <vector>
-#include "Variable.h"
 #include "Errors.h"
-#include "Gconst.h"
-#include "Token.h"
 #include "Functions.h"
 
 using std::cin;
 using std::cout;
-using std::vector;
 using std::cerr;
 using std::exception;
 
