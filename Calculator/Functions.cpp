@@ -180,6 +180,18 @@ void subtract(double& left, Token& t)
     t = ts.get();
 }
 
+void helpdisplay()
+{
+    cout << "You may enter expressions using integers or floating - point numbers.\n";
+    cout << "Addition: '+', Subtraction: '-', Multiplication: '*', Division: '/', Modulo: '%',\n";
+    cout << "Squareroot: 'sqrt(your expression here)', Power: 'pow(your expression here, exponent integer here)',\n";
+    cout << "Factorial: your expression followed by '!' \n";
+    cout << "You may use '(', ')','{', & '}' to denote modifications to the normal order of mathematical operations.\n";
+    cout << "You may define a variable by typing 'let (your variable here) = (your expression here)'.\n";
+    cout << "Variables must start with an alpha character and contain no spaces.\n";
+    cout << "End your expressions with ';' to get a result.\n";
+    cout << "Included mathematical constants: 'pi' (3.1415926535), 'e' (2.7182818284), 'k' (1000)\n\n";
+}
 
 void clean_up_mess()
 {
@@ -341,6 +353,11 @@ void calculate()
         Token t = ts.get();
         while (t.kind == print) {
             t = ts.get();
+        }
+        if (t.kind == help) {
+            helpdisplay();
+            cout << prompt;
+            t = ts.get();   
         }
         if (t.kind == quit) {
             return;

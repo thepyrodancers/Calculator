@@ -51,16 +51,8 @@ using std::exception;
 
 int main()
 try {
-    cout << "Welcome to our simple calculator. \nYou may enter expression using integers or floating-point numbers.\n";
-    cout << "Addition: '+', Subtraction: '-', Multiplication: '*', Division: '/', Modulo: '%',\n";
-    cout << "Squareroot: 'sqrt(your expression here)', Power: 'pow(your expression here, exponent integer here)',\n";
-    cout << "Factorial: your expression followed by '!' \n";
-    cout << "You may use '(', ')','{', & '}' to denote modifications to the normal order of mathematical operations.\n";
-    cout << "You may define a variable by typing 'let (your variable here) = (your expression here)'.\n";
-    cout << "Variables must start with an alpha character and contain no spaces.\n";
-    cout << "End your expressions with ';' to get a result. Enter 'q' to quit at any time.\n";
-    cout << "Included mathematical constants: 'pi' (3.1415926535), 'e' (2.7182818284), 'k' (1000)\n\n";
-    
+    cout << "       D(umb) & A(ss) Enterprises\n               presents: \n    A COMPLEX SIMPLE CALCULATOR!\n\n";
+    cout << "You may enter 'help' for instructions or 'q' to quit at anytime.\n\n";
     define_name("pi", 3.1415926535);
     define_name("e", 2.7182818284);
     define_name("k", 1000);

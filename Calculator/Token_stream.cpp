@@ -65,6 +65,9 @@ Token Token_stream::get()
                 s += ch;
             }
             cin.putback(ch);
+            if (s == helpkey) {
+                return Token{ help };
+            }
             if (s == declkey) {
                 return Token{ let };
             }
