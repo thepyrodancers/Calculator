@@ -1,15 +1,15 @@
 /*
- Aaron's Calculator Code
+Simple Calculator
 
 This program implements a basic expression calculator.
-Input from cin; output to cout.
+Input comes from cin through the Token_stream called "ts"; utput to cout.
 The grammar for input is :
 Calculation:
     Statement
     Print ';'
     Quit 'q'
 Statement:
-    Declaration
+    Declaration (of variable)
     Expression
 Expression :
     Term
@@ -32,8 +32,6 @@ Primary :
     pow(x,i)
 Number :
     floating - point - literal
-
-Input comes from cin through the Token_stream called ts.
 */
 
 #include <iostream>
