@@ -210,6 +210,16 @@ double factorial()
     }
 }
 
+//put this whereever if this is how we do it, if its not good enough for you...... fuck you
+
+void ofhope(double &left, Token &t)
+{
+    double d = factorial();
+    if (d == 0) error("divide by zero");
+    left /= d;
+    t = ts.get();
+}
+
 double term()
 {
     double left = factorial();
@@ -225,10 +235,7 @@ double term()
         }
         case '/':
         {
-            double d = factorial();
-            if (d == 0) error("divide by zero");
-            left /= d;
-            t = ts.get();
+            ofhope(left, t);
             break;
         }
         case '%':
