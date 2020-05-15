@@ -14,12 +14,13 @@ using std::cerr;
 using std::exception;
 
 //------------------------------------------------------------------------------
-// A table for holding user declared variables
+// Declares a table "var_table" used for holding user declared variables
 
 vector<Variable> var_table;
 
 //------------------------------------------------------------------------------
-// Initializes the Token_stream "ts"
+// Declares the Token_stream "ts" used for evaluating tokens and storing
+// tokens in 'buffer'
 
 Token_stream ts;
 
@@ -144,11 +145,50 @@ double calculatefac(double fact)
     return f;
 }
 
+void multiply(double& left, Token& t)
+{
+    left *= factorial();
+    t = ts.get();
+}
+
+void divide(double& left, Token& t)
+{
+    double d = factorial();
+    if (d == 0) error("divide by zero");
+    left /= d;
+    t = ts.get();
+}
+
+void modulo(double& left, Token& t)
+{
+    int i1 = narrow_cast<int>(left);
+    int i2 = narrow_cast<int>(factorial());
+    if (i2 == 0) error("%: divide by zero");
+    left = i1 % i2;
+    t = ts.get();
+}
+
+void add(double& left, Token& t)
+{
+    left += term();
+    t = ts.get();
+}
+
+void subtract(double& left, Token& t)
+{
+    left -= term();
+    t = ts.get();
+}
+
+
+void clean_up_mess()
+{
+    ts.ignore(print);
+}
 
 //------------------------------------------------------------------------------
-// Grammar Functions Section
+// Parsing Functions Section
 //------------------------------------------------------------------------------
-
 
 double primary()
 {
@@ -210,16 +250,6 @@ double factorial()
     }
 }
 
-//put this whereever if this is how we do it, if its not good enough for you...... fuck you
-
-void ofhope(double &left, Token &t)
-{
-    double d = factorial();
-    if (d == 0) error("divide by zero");
-    left /= d;
-    t = ts.get();
-}
-
 double term()
 {
     double left = factorial();
@@ -229,22 +259,17 @@ double term()
         {
         case '*':
         {
-            left *= factorial();
-            t = ts.get();
+            multiply(left, t);
             break;
         }
         case '/':
         {
-            ofhope(left, t);
+            divide(left, t);
             break;
         }
         case '%':
         {
-            int i1 = narrow_cast<int>(left);
-            int i2 = narrow_cast<int>(factorial());
-            if (i2 == 0) error("%: divide by zero");
-            left = i1 % i2;
-            t = ts.get();
+            modulo(left, t);
             break;
         }
 
@@ -263,14 +288,12 @@ double expression()
         switch (t.kind) {
         case '+':
         {
-            left += term();
-            t = ts.get();
+            add(left, t);
             break;
         }
         case '-':
         {
-            left -= term();
-            t = ts.get();
+            subtract(left, t);
             break;
         }
         default:
@@ -308,11 +331,6 @@ double statement()
         ts.putback(t);
         return expression();
     }
-}
-
-void clean_up_mess()
-{
-    ts.ignore(print);
 }
 
 void calculate()

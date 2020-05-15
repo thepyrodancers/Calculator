@@ -1,4 +1,5 @@
 #pragma once
+#include "Token.h"
 
 //------------------------------------------------------------------------------
 // Searches through the variable table to find the inputted variable and returns its
@@ -49,6 +50,35 @@ double powerfunc();
 // comments here!!!
 
 double calculatefac(double fac);
+
+//------------------------------------------------------------------------------
+// comments here!!!
+
+void multiply(double& left, Token& t);
+
+//------------------------------------------------------------------------------
+// comments here!!!
+
+void divide(double& left, Token& t);
+
+//------------------------------------------------------------------------------
+// comments here!!!
+
+void modulo(double& left, Token& t);
+
+//------------------------------------------------------------------------------
+// comments here!!!
+
+void add(double& left, Token& t);
+
+//------------------------------------------------------------------------------
+// comments here!!!
+
+void subtract(double& left, Token& t);
+
+//------------------------------------------------------------------------------
+// Grammar Functions Section
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 // Gets next token from the token stream and evaluates expressions grouped within
