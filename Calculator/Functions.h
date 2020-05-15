@@ -25,12 +25,13 @@ bool is_declared(string var);
 double define_name(string var, double val);
 
 //------------------------------------------------------------------------------
-// Comments here!!!!!
+// Evaluates expressions grouped within '{}'and returns the value 
+
 
 double braces();
 
 //------------------------------------------------------------------------------
-// comments here!!!!!
+// Evaluates expressions grouped within '()'and returns the value
 
 double parenthesis();
 
@@ -47,72 +48,80 @@ double squareroot();
 double powerfunc();
 
 //------------------------------------------------------------------------------
-// comments here!!!
+// Calculates the factorial of a primary and returns the result
 
 double calculatefac(double fac);
 
 //------------------------------------------------------------------------------
-// comments here!!!
+// Calculates multiplication of a term by a factorial or primary and returns the result.
 
 void multiply(double& left, Token& t);
 
 //------------------------------------------------------------------------------
-// comments here!!!
+// Calculates division of a term by a factorial or primary and returns the result.
 
 void divide(double& left, Token& t);
 
 //------------------------------------------------------------------------------
-// comments here!!!
+// Calculates modulo of a term by a factorial or primary and returns the result.
 
 void modulo(double& left, Token& t);
 
 //------------------------------------------------------------------------------
-// comments here!!!
+// Calculates addition of terms within expression.
 
 void add(double& left, Token& t);
 
 //------------------------------------------------------------------------------
-// comments here!!!
+// Calculates subtraction of terms within expression.
 
 void subtract(double& left, Token& t);
 
 //------------------------------------------------------------------------------
-// comments here!!!!!
+// Displays calclulator instructions when user enters "help"
 
-void helpdisplay()
+void helpdisplay();
+
+//------------------------------------------------------------------------------
+// This is called when an error is caught within an expression so that any following expressions
+// are evaluated without the erroneous expression's 'print' character included in the evaluation
+// Passes the 'print' character ';' to ignore() ensuring it is not included in proceeding 
+// expression evaluations 
+
+void clean_up_mess();
 
 //------------------------------------------------------------------------------
 // Grammar Functions Section
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-// Gets next token from the token stream and evaluates expressions grouped within
-// '{}' or '()' as well as single number expressions and returns the value 
-// for the grouped expressions or single numbers
-// Also handles negative numbers by returning -primary() when a '-' is used before a number
-// Returns the numeric value for a user defined variable string when it is used in an expression
+// Gets next token from the token stream. Calls various functions depending on the token type.
+// Handles expressions within braces or parenthesis by calling braces() or parenthesis()
+// Handles negative numbers by returning -primary() when a '-' is placed before a number or expresion
+// Returns the numeric value of a number token
+// Calls get_value() to return the numeric value for a user defined variable string
 // Calls squareroot() and powerfunc() when the user has inputted "sqrt()" or "pow()"
+// Returns error if incorrect syntax is used
 
 double primary();
 
 //------------------------------------------------------------------------------
-// Gets next token from token stream and calculates a factorial denoted by '!' and
-// returns the value for the factorial. All tokens other than '!' are put back into the
-// token stream
+// Gets next token from token stream and calls calculatefac() when a factioral denoted by '!' is used
+// All tokens other than '!' are put back into the token stream
 
 double factorial();
 
 //------------------------------------------------------------------------------
-// Gets next token from token stream and evaluates a term. Calculates multiplication, division,
-// or modulo of a term by a factorial or primary and returns the result. All tokens other than '*', '/',
-// and '%' are put back into the token stream
+// Gets next token from token stream and evaluates a term. Calls multiply(), divide(),
+// or modulo() when multiplication, diviion, or modulo denoted by '*', '/', or '%' are used
+// All tokens other than '*', '/', and '%' are put back into the token stream
 
 double term();
 
 //------------------------------------------------------------------------------
-// Gets next token from the token stream and evaluates expressions. Calculates 
-// addition and subtraction of terms within the expression. All tokens other than
-// '+' and '-' are returned to the token stream
+// Gets next token from the token stream and evaluates expressions. Calls add() and 
+// subract() when addition or subtraction denoted by '+' and '-' are used
+// All tokens other than '+' and '-' are returned to the token stream
 
 double expression();
 
@@ -132,19 +141,12 @@ double declaration();
 double statement();
 
 //------------------------------------------------------------------------------
-// This is called when an error is caught within an expression so that any following expressions
-// are evaluated without the erroneous expression's 'print' character included in the evaluation
-// Passes the 'print' character ';' to ignore() ensuring it is not included in proceeding 
-// expression evaluations 
-
-void clean_up_mess();
-
-//------------------------------------------------------------------------------
 // Gives the user an input prompt and begins creation, evaluation, and storing of tokens
 // in the buffer 
 // Outputs result of each individual expression ended with the "print" character ';'
 // Results of expressions are evaluated beginning with the call of statement()
 // Checks for "quit" character 'q' and ends program when it is used
+// Checks for "help" string and calls helpdisplay() when it is used
 // Checks for errors in individual expressions and outputs error messages while allowing
 // the evaluation of all other expressions by calling clean_up_mess() 
 
