@@ -2,7 +2,7 @@
 Simple Calculator
 
 This program implements a basic expression calculator.
-Input comes from cin through the Token_stream called "ts"; utput to cout.
+Input comes from cin through the Token_stream called "ts"; output to cout.
 The grammar for input is :
 Calculation:
     Statement
@@ -27,7 +27,7 @@ Primary :
     (Expression)
     – Primary
     + Primary
-    Name (variable)
+    Name (Variable)
     sqrt(Expression)
     pow(x,i)
 Number :
