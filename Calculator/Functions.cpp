@@ -442,8 +442,7 @@ void calculate()
                 }
                 if (t.kind == help) {
                     helpdisplay();
-                    cout << prompt;
-                    t = ts.get();
+                    break;
                 }
                 if (t.kind == quit) {
                     return;
