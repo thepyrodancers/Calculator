@@ -13,8 +13,8 @@ double get_value(string s);
 void set_value(string s, double d);
 
 //------------------------------------------------------------------------------
-// Checks to see if a string  has already been declared as a variable
-// A specific string my only be declared as a variable once
+// Checks to see if a string  has previously been declared as a variable
+// A specific string may only be declared as a variable once
 
 bool is_declared(string var);
 

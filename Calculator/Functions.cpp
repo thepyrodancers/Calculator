@@ -29,6 +29,11 @@ Token_stream ts;
 // Calculation Functions Section
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+// Searches through vector "var_table" for argument "string s"; if a match
+// is found, returns the value property of that vector element
+// If a match for argument "string s" is not found an error is thrown
+
 double get_value(string s)
 {
     for (int i = 0; i < var_table.size(); ++i) {
@@ -38,6 +43,11 @@ double get_value(string s)
     }
     error("get: undefined variable ", s);
 }
+
+//------------------------------------------------------------------------------
+// Searches through vector "var_table" for argument "string s"; if a match
+// is found, the value property of that vector member is set to argument "double d"
+// If a match for argument "string s" is not found and error is thrown
 
 void set_value(string s, double d)
 {
@@ -50,6 +60,11 @@ void set_value(string s, double d)
     }
 }
 
+//------------------------------------------------------------------------------
+// Searches through vector "var_table" for argument "string var"; if a match is
+// found, bool is_declared(string var) returns true and if a match is not found
+// returns false
+
 bool is_declared(string var)
 {
     for (int i = 0; i < var_table.size(); ++i)
@@ -59,6 +74,13 @@ bool is_declared(string var)
     return false;
 }
 
+//------------------------------------------------------------------------------
+// Calls function "is_declared" passing the argument "string var" to check if 
+// argument "string var" has already been declared (returns true). If it has been 
+// declared an error is thrown. If argument "string var" has NOT been previously declared
+// (returns false), it is then added to vector "var_table" along with the value property argument
+//  "double val" and value property "double val" is returned
+
 double define_name(string var, double val)
 {
     if (is_declared(var)) {
@@ -67,6 +89,12 @@ double define_name(string var, double val)
     var_table.push_back(Variable{ var, val });
     return val;
 }
+
+//------------------------------------------------------------------------------
+// "double c" is set to the result of function "expression()", Token t is set to
+// the next token in Token_stream 'ts', which is returned by  function "ts.get()"
+// If the kind property of the token is not a ')' an error is thrown
+// "double c" is returned
 
 double parenthesis()
 {
@@ -78,6 +106,12 @@ double parenthesis()
     return c;
 }
 
+//------------------------------------------------------------------------------
+// "double c" is set to the result of function "expression()", Token t is set to
+// the next token in Token_stream 'ts', which is returned by  function "ts.get()"
+// If the kind property of the token is not a '}' an error is thrown
+// "double c" is returned
+
 double braces()
 {
     double c = expression();
@@ -87,6 +121,9 @@ double braces()
     }
     return c;
 }
+
+//------------------------------------------------------------------------------
+//
 
 double squareroot()
 {
@@ -108,6 +145,9 @@ double squareroot()
     ts.ignore(')');
     return sqrt(e);
 }
+
+//------------------------------------------------------------------------------
+//
 
 double powerfunc()
 {
@@ -134,6 +174,9 @@ double powerfunc()
     return pow(x, i);
 }
 
+//------------------------------------------------------------------------------
+//
+
 double calculatefac(double fact)
 {
     
@@ -145,11 +188,17 @@ double calculatefac(double fact)
     return f;
 }
 
+//------------------------------------------------------------------------------
+//
+
 void multiply(double& left, Token& t)
 {
     left *= factorial();
     t = ts.get();
 }
+
+//------------------------------------------------------------------------------
+//
 
 void divide(double& left, Token& t)
 {
@@ -158,6 +207,9 @@ void divide(double& left, Token& t)
     left /= d;
     t = ts.get();
 }
+
+//------------------------------------------------------------------------------
+//
 
 void modulo(double& left, Token& t)
 {
@@ -168,17 +220,26 @@ void modulo(double& left, Token& t)
     t = ts.get();
 }
 
+//------------------------------------------------------------------------------
+//
+
 void add(double& left, Token& t)
 {
     left += term();
     t = ts.get();
 }
 
+//------------------------------------------------------------------------------
+//
+
 void subtract(double& left, Token& t)
 {
     left -= term();
     t = ts.get();
 }
+
+//------------------------------------------------------------------------------
+//
 
 void helpdisplay()
 {
@@ -193,6 +254,9 @@ void helpdisplay()
     cout << "Included mathematical constants: 'pi' (3.1415926535), 'e' (2.7182818284), 'k' (1000)\n\n";
 }
 
+//------------------------------------------------------------------------------
+//
+
 void clean_up_mess()
 {
     ts.ignore(print);
@@ -201,6 +265,9 @@ void clean_up_mess()
 //------------------------------------------------------------------------------
 // Parsing Functions Section
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//
 
 double primary()
 {
@@ -244,6 +311,9 @@ double primary()
     }
 }
 
+//------------------------------------------------------------------------------
+//
+
 double factorial() 
 {
     double left = primary();
@@ -261,6 +331,9 @@ double factorial()
         }
     }
 }
+
+//------------------------------------------------------------------------------
+//
 
 double term()
 {
@@ -292,6 +365,9 @@ double term()
     }
 }
 
+//------------------------------------------------------------------------------
+//
+
 double expression()
 {
     double left = term();
@@ -315,6 +391,9 @@ double expression()
     }
 }
 
+//------------------------------------------------------------------------------
+//
+
 double declaration()
 {
     Token t = ts.get();
@@ -331,6 +410,9 @@ double declaration()
     return d;
 }
 
+//------------------------------------------------------------------------------
+//
+
 double statement()
 {
     Token t = ts.get();
@@ -344,6 +426,9 @@ double statement()
         return expression();
     }
 }
+
+//------------------------------------------------------------------------------
+//
 
 void calculate()
 {
