@@ -167,10 +167,12 @@ double powerfunc()
     int i = narrow_cast<int>(expression());
     Token t3 = ts.get();
     if (t3.kind != ')') {
+        cin.putback(';');
         error("')' expected");
     }
-    ts.putback(t3);
-    ts.ignore(')');
+    //ts.putback(t3);
+    
+    //clean_up_mess();
     return pow(x, i);
 }
 
