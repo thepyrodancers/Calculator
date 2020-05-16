@@ -349,6 +349,7 @@ void calculate()
 {
     while (cin) {
         try {
+            cout << prompt;
             Token t = ts.get();
             while (t.kind == print) {
                 t = ts.get();
@@ -363,9 +364,6 @@ void calculate()
             }
             ts.putback(t);
             cout << result << statement() << '\n';
-            if (cin.get() == '\n') {
-                cout << prompt;
-            }
         }
         catch (exception& e) {
             cerr << e.what() << '\n';

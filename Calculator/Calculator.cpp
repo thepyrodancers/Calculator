@@ -37,7 +37,6 @@ Number :
 #include <iostream>
 #include "Errors.h"
 #include "Functions.h"
-#include "Gconst.h"
 
 using std::cin;
 using std::cout;
@@ -53,7 +52,7 @@ using std::exception;
 int main()
 try {
     cout << "       D(umb) & A(ss) Enterprises\n               presents: \n    A COMPLEX SIMPLE CALCULATOR!\n\n";
-    cout << "You may enter 'help' for instructions or 'q' to quit at anytime.\n\n" << prompt;
+    cout << "You may enter 'help' for instructions or 'q' to quit at anytime.\n\n";
     define_name("pi", 3.1415926535);
     define_name("e", 2.7182818284);
     define_name("k", 1000);
