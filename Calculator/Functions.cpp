@@ -347,26 +347,29 @@ double statement()
 
 void calculate()
 {
-    while (cin)
+    while (cin) {
         try {
-        cout << prompt;
-        Token t = ts.get();
-        while (t.kind == print) {
-            t = ts.get();
+            Token t = ts.get();
+            while (t.kind == print) {
+                t = ts.get();
+            }
+            if (t.kind == help) {
+                helpdisplay();
+                cout << prompt;
+                t = ts.get();
+            }
+            if (t.kind == quit) {
+                return;
+            }
+            ts.putback(t);
+            cout << result << statement() << '\n';
+            if (cin.get() == '\n') {
+                cout << prompt;
+            }
         }
-        if (t.kind == help) {
-            helpdisplay();
-            cout << prompt;
-            t = ts.get();   
+        catch (exception& e) {
+            cerr << e.what() << '\n';
+            clean_up_mess();
         }
-        if (t.kind == quit) {
-            return;
-        }
-        ts.putback(t);
-        cout << result << statement() << '\n';
-    }
-    catch (exception& e) {
-        cerr << e.what() << '\n';
-        clean_up_mess();
     }
 }
