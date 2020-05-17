@@ -8,9 +8,9 @@
 double get_value(string s);
 
 //------------------------------------------------------------------------------
-// Associates a numeric value with a user declared variable string, 
+// Associates a new numeric value with a previously declared user variable string, 
 
-double set_value(string s, double d);
+double reset_value();
 
 //------------------------------------------------------------------------------
 // Checks to see if a string  has previously been declared as a variable

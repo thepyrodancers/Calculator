@@ -52,7 +52,7 @@ double get_value(string s)
 // If a match for argument "string s" is not found "print" (;) is returned to the input stream
 // and an error is thrown
 
-double set_value()
+double reset_value()
 {
     Token t = ts.get();
     if (t.kind != name) {
@@ -436,7 +436,7 @@ double statement()
     }
     case reset:
     {
-        return set_value();
+        return reset_value();
     }
     default:
         ts.putback(t);
