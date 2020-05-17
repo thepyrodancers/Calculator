@@ -476,7 +476,7 @@ void calculate()
                 cerr << e.what() << '\n';
                 cin.putback(print);
                 clean_up_mess();
-                cout << prompt;
+                break;
             }
         }
     }
