@@ -51,7 +51,7 @@ double powerfunc();
 // Calculates the factorial of a primary and returns the result
 // Gets next token from the token stream for further evaluation
 
-double calculatefac(double fac);
+double calculate_fac(double fac);
 
 //------------------------------------------------------------------------------
 // Calculates multiplication of a term by a factorial or primary and returns the result.
@@ -147,10 +147,14 @@ double declaration();
 double statement();
 
 //------------------------------------------------------------------------------
-// Gives the user an input prompt and begins creation, evaluation, and storing of tokens
-// in the buffer 
-// Outputs result of each individual expression ended with the "print" character ';'
+//
+
+void blink_prompt();
+
+//------------------------------------------------------------------------------
+// Begins creation, evaluation, and storing of tokens in the buffer 
 // Results of expressions are evaluated beginning with the call of statement()
+// Outputs result of each individual expression ended with the "print" character ';'
 // Checks for "quit" character 'q' and ends program when it is used
 // Checks for "help" string and calls helpdisplay() when it is used
 // Checks for errors in individual expressions and outputs error messages while allowing

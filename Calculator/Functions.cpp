@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <Windows.h>
+#include "conio.h"
 #include "Variable.h"
 #include "Errors.h"
 #include "Gconst.h"
@@ -185,7 +187,7 @@ double powerfunc()
 //------------------------------------------------------------------------------
 //
 
-double calculatefac(double fact)
+double calculate_fac(double fact)
 {
     
     double x = fact;
@@ -336,7 +338,7 @@ double factorial()
         switch (t.kind) {
         case '!':
         {
-            return calculatefac(left);
+            return calculate_fac(left);
         }
         default:
             ts.putback(t);
@@ -447,10 +449,26 @@ double statement()
 //------------------------------------------------------------------------------
 //
 
+void blink_prompt()
+{
+    while (!_kbhit()) {
+        cout << prompt;
+        for (int i = 0; i < INT_MAX; ++i)
+        {
+            Sleep(500);
+            cout << "\b" << " ";
+            Sleep(500);
+            cout << "\b" << prompt;
+            if (_kbhit())
+                break;
+        }
+    }
+}
+
 void calculate()
 {
     while (cin) {
-        cout << prompt;
+        blink_prompt();
         while (cin) {
             try {
                 Token t = ts.get();
