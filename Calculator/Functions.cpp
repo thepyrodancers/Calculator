@@ -42,7 +42,6 @@ double get_value(string s)
             return var_table[i].value;
         }
     }
-    cin.putback(print);
     error("get: undefined variable ", s);
 }
 
@@ -70,7 +69,6 @@ double reset_value()
             return d;
         }
     }
-    cin.putback(print);
     error("set: undefined variable ", var_name);
 }
 
@@ -98,7 +96,7 @@ bool is_declared(string var)
 double define_name(string var, double val)
 {
     if (is_declared(var)) {
-        error(var, " declared twice; use 'reset' to change the value.");
+        error(var, " previously declared; use 'reset' to change the value.");
     }
     var_table.push_back(Variable{ var, val });
     return val;
@@ -153,7 +151,6 @@ double squareroot()
     }
     Token t2 = ts.get();
     if (t2.kind != ')') {
-        cin.putback(print);
         error("')' expected");
     }
     return sqrt(e);
@@ -180,7 +177,6 @@ double powerfunc()
     int i = narrow_cast<int>(expression());
     Token t3 = ts.get();
     if (t3.kind != ')') {
-        cin.putback(print);
         error("')' expected");
     }
     return pow(x, i);
@@ -474,6 +470,7 @@ void calculate()
             }
             catch (exception& e) {
                 cerr << e.what() << '\n';
+                cin.putback(print);
                 clean_up_mess();
                 cout << prompt;
             }

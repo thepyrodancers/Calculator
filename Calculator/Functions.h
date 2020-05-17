@@ -49,31 +49,37 @@ double powerfunc();
 
 //------------------------------------------------------------------------------
 // Calculates the factorial of a primary and returns the result
+// Gets next token from the token stream for further evaluation
 
 double calculatefac(double fac);
 
 //------------------------------------------------------------------------------
 // Calculates multiplication of a term by a factorial or primary and returns the result.
+// Gets next token from the token stream for further evaluation
 
 void multiply(double& left, Token& t);
 
 //------------------------------------------------------------------------------
 // Calculates division of a term by a factorial or primary and returns the result.
+// Gets next token from the token stream for further evaluation
 
 void divide(double& left, Token& t);
 
 //------------------------------------------------------------------------------
 // Calculates modulo of a term by a factorial or primary and returns the result.
+// Gets next token from the token stream for further evaluation
 
 void modulo(double& left, Token& t);
 
 //------------------------------------------------------------------------------
 // Calculates addition of terms within expression.
+// Gets next token from the token stream for further evaluation
 
 void add(double& left, Token& t);
 
 //------------------------------------------------------------------------------
 // Calculates subtraction of terms within expression.
+// Gets next token from the token stream for further evaluation
 
 void subtract(double& left, Token& t);
 
