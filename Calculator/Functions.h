@@ -10,7 +10,7 @@ double get_value(string s);
 //------------------------------------------------------------------------------
 // Associates a numeric value with a user declared variable string, 
 
-void set_value(string s, double d);
+double set_value(string s, double d);
 
 //------------------------------------------------------------------------------
 // Checks to see if a string  has previously been declared as a variable

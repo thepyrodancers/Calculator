@@ -71,6 +71,9 @@ Token Token_stream::get()
             if (s == declkey) {
                 return Token{ let };
             }
+            if (s == resetkey) {
+                return Token{ reset };
+            }
             if (s == sqrtkey) {
                 return Token{ root };
             }

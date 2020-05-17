@@ -32,7 +32,8 @@ Token_stream ts;
 //------------------------------------------------------------------------------
 // Searches through vector "var_table" for argument "string s"; if a match
 // is found, returns the value property of that vector element
-// If a match for argument "string s" is not found an error is thrown
+// If a match for argument "string s" is not found "print" (;) is returned to the input stream
+// and an error is thrown
 
 double get_value(string s)
 {
@@ -41,23 +42,36 @@ double get_value(string s)
             return var_table[i].value;
         }
     }
+    cin.putback(print);
     error("get: undefined variable ", s);
 }
 
 //------------------------------------------------------------------------------
 // Searches through vector "var_table" for argument "string s"; if a match
 // is found, the value property of that vector member is set to argument "double d"
-// If a match for argument "string s" is not found and error is thrown
+// If a match for argument "string s" is not found "print" (;) is returned to the input stream
+// and an error is thrown
 
-void set_value(string s, double d)
+double set_value()
 {
-    for (int i = 0; i < var_table.size(); ++i) {
-        if (var_table[i].name == s) {
-            var_table[i].value = d;
-            return;
-        }
-        error("set: undefined variable ", s);
+    Token t = ts.get();
+    if (t.kind != name) {
+        error("name expected in declaration");
     }
+    string var_name = t.name;
+    Token t2 = ts.get();
+    if (t2.kind != '=') {
+        error("= missing in declaration of ", var_name);
+    }
+    double d = expression();
+    for (int i = 0; i < var_table.size(); ++i) {
+        if (var_table[i].name == var_name) {
+            var_table[i].value = d;
+            return d;
+        }
+    }
+    cin.putback(print);
+    error("set: undefined variable ", var_name);
 }
 
 //------------------------------------------------------------------------------
@@ -84,7 +98,7 @@ bool is_declared(string var)
 double define_name(string var, double val)
 {
     if (is_declared(var)) {
-        error(var, " declared twice");
+        error(var, " declared twice; use 'reset' to change the value.");
     }
     var_table.push_back(Variable{ var, val });
     return val;
@@ -109,7 +123,7 @@ double parenthesis()
 //------------------------------------------------------------------------------
 // "double c" is set to the result of function "expression()", Token t is set to
 // the next token in Token_stream 'ts', which is returned by  function "ts.get()"
-// If the kind property of the token is not a '}' an error is thrown
+// If the "kind" property of the token is not a '}' an error is thrown
 // "double c" is returned
 
 double braces()
@@ -139,10 +153,9 @@ double squareroot()
     }
     Token t2 = ts.get();
     if (t2.kind != ')') {
+        cin.putback(print);
         error("')' expected");
     }
-    ts.putback(t2);
-    ts.ignore(')');
     return sqrt(e);
 }
 
@@ -167,12 +180,9 @@ double powerfunc()
     int i = narrow_cast<int>(expression());
     Token t3 = ts.get();
     if (t3.kind != ')') {
-        cin.putback(';');
+        cin.putback(print);
         error("')' expected");
     }
-    //ts.putback(t3);
-    
-    //clean_up_mess();
     return pow(x, i);
 }
 
@@ -252,6 +262,7 @@ void helpdisplay()
     cout << "You may use '(', ')','{', & '}' to denote modifications to the normal order of mathematical operations.\n";
     cout << "You may define a variable by typing 'let (your variable here) = (your expression here)'.\n";
     cout << "Variables must start with an alpha character and contain no spaces.\n";
+    cout << "To reset a variable that has already been declared use 'reset (your variable here) = (your expression here)'.\n";
     cout << "End your expressions with ';' to get a result.\n";
     cout << "Included mathematical constants: 'pi' (3.1415926535), 'e' (2.7182818284), 'k' (1000)\n\n";
 }
@@ -423,6 +434,10 @@ double statement()
     {
         return declaration();
     }
+    case reset:
+    {
+        return set_value();
+    }
     default:
         ts.putback(t);
         return expression();
@@ -460,6 +475,7 @@ void calculate()
             catch (exception& e) {
                 cerr << e.what() << '\n';
                 clean_up_mess();
+                cout << prompt;
             }
         }
     }
