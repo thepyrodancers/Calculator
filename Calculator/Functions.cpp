@@ -251,16 +251,20 @@ void subtract(double& left, Token& t)
 
 void helpdisplay()
 {
-    cout << "You may enter expressions using integers or floating - point numbers.\n";
-    cout << "Addition: '+', Subtraction: '-', Multiplication: '*', Division: '/', Modulo: '%',\n";
-    cout << "Squareroot: 'sqrt(your expression here)', Power: 'pow(your expression here, exponent integer here)',\n";
-    cout << "Factorial: your expression followed by '!' \n";
-    cout << "You may use '(', ')','{', & '}' to denote modifications to the normal order of mathematical operations.\n";
-    cout << "You may define a variable by typing 'let (your variable here) = (your expression here)'.\n";
-    cout << "Variables must start with an alpha character and contain no spaces.\n";
-    cout << "To reset a variable that has already been declared use 'reset (your variable here) = (your expression here)'.\n";
-    cout << "End your expressions with ';' to get a result.\n";
-    cout << "Included mathematical constants: 'pi' (3.1415926535), 'e' (2.7182818284), 'k' (1000)\n\n";
+    cout << "\nYou may enter expressions using integers or floating - point numbers.\n";
+    cout << "You may use '{', '}','(', & ')' to denote modifications to the normal order of mathematical operations.\n";
+    cout << "End your expressions with ';' to get a result.\n\n";
+    cout << "Operators:\n";
+    cout << "   Addition: '+', Subtraction: '-', Multiplication: '*', Division: '/', Modulo: '%',\n";
+    cout << "   Squareroot: 'sqrt(your expression here)', Power: 'pow(your expression here, exponent integer here)',\n";
+    cout << "   Factorial: your expression followed by '!' \n";
+    cout << "Examples: 1+{2-(3*4/5)}; sqrt(9); pow(3,2); 3!; -5+-5; 10%3;\n\n";
+    cout << "Variables:\n";
+    cout << "   You may define a variable by typing 'let (your variable here) = (your expression here)' Example: let x=5;.\n";
+    cout << "   Variables must start with an alpha character and contain no spaces.\n";
+    cout << "   To redeclare a variable use 'reset (your variable here) = (your expression here)' Example: reset x=6;.\n\n";
+    cout << "Included mathematical constants:\n";
+    cout << "   'pi' (3.1415926535), 'e' (2.7182818284), 'k' (1000)\n\n";
 }
 
 //------------------------------------------------------------------------------
