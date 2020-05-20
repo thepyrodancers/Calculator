@@ -21,13 +21,6 @@ using std::exception;
 vector<Variable> var_table;
 
 //------------------------------------------------------------------------------
-// Declares the Token_stream "ts" used for evaluating tokens and storing
-// tokens in 'buffer'
-
-Token_stream ts;
-
-
-//------------------------------------------------------------------------------
 // Calculation Functions Section
 //------------------------------------------------------------------------------
 
@@ -53,18 +46,18 @@ double get_value(string s)
 // If a match for argument "string s" is not found "print" (;) is returned to the input stream
 // and an error is thrown
 
-double reset_value()
+double reset_value(Token_stream& myts)
 {
-    Token t = ts.get();
+    Token t = myts.get();
     if (t.kind != name) {
         error("name expected in declaration");
     }
     string var_name = t.name;
-    Token t2 = ts.get();
+    Token t2 = myts.get();
     if (t2.kind != '=') {
         error("= missing in declaration of ", var_name);
     }
-    double d = expression();
+    double d = expression(myts);
     for (int i = 0; i < var_table.size(); ++i) {
         if (var_table[i].name == var_name) {
             var_table[i].value = d;
@@ -110,10 +103,10 @@ double define_name(string var, double val)
 // If the kind property of the token is not a ')' an error is thrown
 // "double c" is returned
 
-double parenthesis()
+double parenthesis(Token_stream& myts)
 {
-    double c = expression();
-    Token t = ts.get();
+    double c = expression(myts);
+    Token t = myts.get();
     if (t.kind != ')') {
         error("')' expected");
     }
@@ -126,10 +119,10 @@ double parenthesis()
 // If the "kind" property of the token is not a '}' an error is thrown
 // "double c" is returned
 
-double braces()
+double braces(Token_stream& myts)
 {
-    double c = expression();
-    Token t = ts.get();
+    double c = expression(myts);
+    Token t = myts.get();
     if (t.kind != '}') {
         error("'}' expected");
     }
@@ -139,19 +132,19 @@ double braces()
 //------------------------------------------------------------------------------
 //
 
-double squareroot()
+double squareroot(Token_stream& myts)
 {
-    Token t = ts.get();
+    Token t = myts.get();
     if (t.kind != '(') {
         error("'(' expected");
     }
-    ts.putback(t);
-    ts.ignore('(');
-    double e = expression();
+    myts.putback(t);
+    myts.ignore('(');
+    double e = expression(myts);
     if (e < 0) {
         error("Square Root of Negative");
     }
-    Token t2 = ts.get();
+    Token t2 = myts.get();
     if (t2.kind != ')') {
         error("')' expected");
     }
@@ -161,23 +154,23 @@ double squareroot()
 //------------------------------------------------------------------------------
 //
 
-double powerfunc()
+double powerfunc(Token_stream& myts)
 {
-    Token t = ts.get();
+    Token t = myts.get();
     if (t.kind != '(') {
         error("'(' expected");
     }
-    ts.putback(t);
-    ts.ignore('(');
-    double x = expression();
-    Token t2 = ts.get();
+    myts.putback(t);
+    myts.ignore('(');
+    double x = expression(myts);
+    Token t2 = myts.get();
     if (t2.kind != ',') {
         error("',' expected");
     }
-    ts.putback(t2);
-    ts.ignore(',');
-    int i = narrow_cast<int>(expression());
-    Token t3 = ts.get();
+    myts.putback(t2);
+    myts.ignore(',');
+    int i = narrow_cast<int>(expression(myts));
+    Token t3 = myts.get();
     if (t3.kind != ')') {
         error("')' expected");
     }
@@ -201,51 +194,51 @@ double calculate_fac(double fact)
 //------------------------------------------------------------------------------
 //
 
-void multiply(double& left, Token& t)
+void multiply(double& left, Token& t, Token_stream& myts)
 {
-    left *= factorial();
-    t = ts.get();
+    left *= factorial(myts);
+    t = myts.get();
 }
 
 //------------------------------------------------------------------------------
 //
 
-void divide(double& left, Token& t)
+void divide(double& left, Token& t, Token_stream& myts)
 {
-    double d = factorial();
+    double d = factorial(myts);
     if (d == 0) error("divide by zero");
     left /= d;
-    t = ts.get();
+    t = myts.get();
 }
 
 //------------------------------------------------------------------------------
 //
 
-void modulo(double& left, Token& t)
+void modulo(double& left, Token& t, Token_stream& myts)
 {
     int i1 = narrow_cast<int>(left);
-    int i2 = narrow_cast<int>(factorial());
+    int i2 = narrow_cast<int>(factorial(myts));
     if (i2 == 0) error("%: divide by zero");
     left = i1 % i2;
-    t = ts.get();
+    t = myts.get();
 }
 
 //------------------------------------------------------------------------------
 //
 
-void add(double& left, Token& t)
+void add(double& left, Token& t, Token_stream& myts)
 {
-    left += term();
-    t = ts.get();
+    left += term(myts);
+    t = myts.get();
 }
 
 //------------------------------------------------------------------------------
 //
 
-void subtract(double& left, Token& t)
+void subtract(double& left, Token& t, Token_stream& myts)
 {
-    left -= term();
-    t = ts.get();
+    left -= term(myts);
+    t = myts.get();
 }
 
 //------------------------------------------------------------------------------
@@ -272,9 +265,9 @@ void helpdisplay()
 //------------------------------------------------------------------------------
 //
 
-void clean_up_mess()
+void clean_up_mess(Token_stream& myts)
 {
-    ts.ignore(print);
+    myts.ignore(print);
 }
 
 //------------------------------------------------------------------------------
@@ -284,26 +277,26 @@ void clean_up_mess()
 //------------------------------------------------------------------------------
 //
 
-double primary()
+double primary(Token_stream& myts)
 {
-    Token t = ts.get();
+    Token t = myts.get();
     switch (t.kind) {
     case '{':
     {
-        return braces();
+        return braces(myts);
     }
     case '(':
     {
-        return parenthesis();
+        return parenthesis(myts);
     }
 
     case '-':
     {
-        return -primary();
+        return -primary(myts);
     }
     case '+':
     {
-        return primary();
+        return primary(myts);
     }
     case number:
     {
@@ -315,11 +308,11 @@ double primary()
     }
     case root:
     {
-        return squareroot();
+        return squareroot(myts);
     }
     case power:
     {
-        return powerfunc();
+        return powerfunc(myts);
     }
     default:
         error("primary expected");
@@ -329,10 +322,10 @@ double primary()
 //------------------------------------------------------------------------------
 //
 
-double factorial() 
+double factorial(Token_stream& myts)
 {
-    double left = primary();
-    Token t = ts.get();
+    double left = primary(myts);
+    Token t = myts.get();
     while (true) {
 
         switch (t.kind) {
@@ -341,7 +334,7 @@ double factorial()
             return calculate_fac(left);
         }
         default:
-            ts.putback(t);
+            myts.putback(t);
             return left;
         }
     }
@@ -350,31 +343,31 @@ double factorial()
 //------------------------------------------------------------------------------
 //
 
-double term()
+double term(Token_stream& myts)
 {
-    double left = factorial();
-    Token t = ts.get();
+    double left = factorial(myts);
+    Token t = myts.get();
     while (true) {
         switch (t.kind)
         {
         case '*':
         {
-            multiply(left, t);
+            multiply(left, t, myts);
             break;
         }
         case '/':
         {
-            divide(left, t);
+            divide(left, t, myts);
             break;
         }
         case '%':
         {
-            modulo(left, t);
+            modulo(left, t, myts);
             break;
         }
 
         default:
-            ts.putback(t);
+            myts.putback(t);
             return left;
         }
     }
@@ -383,24 +376,24 @@ double term()
 //------------------------------------------------------------------------------
 //
 
-double expression()
+double expression(Token_stream& myts)
 {
-    double left = term();
-    Token t = ts.get();
+    double left = term(myts);
+    Token t = myts.get();
     while (true) {
         switch (t.kind) {
         case '+':
         {
-            add(left, t);
+            add(left, t, myts);
             break;
         }
         case '-':
         {
-            subtract(left, t);
+            subtract(left, t, myts);
             break;
         }
         default:
-            ts.putback(t);
+            myts.putback(t);
             return left;
         }
     }
@@ -409,18 +402,18 @@ double expression()
 //------------------------------------------------------------------------------
 //
 
-double declaration()
+double declaration(Token_stream& myts)
 {
-    Token t = ts.get();
+    Token t = myts.get();
     if (t.kind != name) {
         error("name expected in declaration");
     }
     string var_name = t.name;
-    Token t2 = ts.get();
+    Token t2 = myts.get();
     if (t2.kind != '=') {
         error("= missing in declaration of ", var_name);
     }
-    double d = expression();
+    double d = expression(myts);
     define_name(var_name, d);
     return d;
 }
@@ -428,21 +421,21 @@ double declaration()
 //------------------------------------------------------------------------------
 //
 
-double statement()
+double statement(Token_stream& myts)
 {
-    Token t = ts.get();
+    Token t = myts.get();
     switch (t.kind) {
     case let:
     {
-        return declaration();
+        return declaration(myts);
     }
     case reset:
     {
-        return reset_value();
+        return reset_value(myts);
     }
     default:
-        ts.putback(t);
-        return expression();
+        myts.putback(t);
+        return expression(myts);
     }
 }
 
@@ -465,15 +458,15 @@ void blink_prompt()
     }
 }
 
-void calculate()
+void calculate(Token_stream& myts)
 {
     while (cin) {
         blink_prompt();
         while (cin) {
             try {
-                Token t = ts.get();
+                Token t = myts.get();
                 while (t.kind == print) {
-                    t = ts.get();
+                    t = myts.get();
                 }
                 if (t.kind == help) {
                     helpdisplay();
@@ -482,8 +475,8 @@ void calculate()
                 if (t.kind == quit) {
                     return;
                 }
-                ts.putback(t);
-                cout << result << statement() << '\n';
+                myts.putback(t);
+                cout << result << statement(myts) << '\n';
                 if (cin.get() == '\n') {
                     break;
                 }
@@ -493,7 +486,7 @@ void calculate()
             catch (exception& e) {
                 cerr << e.what() << '\n';
                 cin.putback(print);
-                clean_up_mess();
+                clean_up_mess(myts);
                 break;
             }
         }

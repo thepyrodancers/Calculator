@@ -37,6 +37,8 @@ Number :
 #include <iostream>
 #include "Errors.h"
 #include "Functions.h"
+#include "Token_stream.h"
+#include "Calculator.h"
 
 using std::cin;
 using std::cout;
@@ -57,7 +59,7 @@ try {
     define_name("e", 2.7182818284);
     define_name("k", 1000);
 
-    calculate();
+    calculate(myts);
     return 0;
 }
 catch (exception& e) {

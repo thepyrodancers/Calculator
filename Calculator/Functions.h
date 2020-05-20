@@ -1,5 +1,5 @@
 #pragma once
-#include "Token.h"
+#include "Token_stream.h"
 
 //------------------------------------------------------------------------------
 // Searches through the variable table to find the inputted variable and returns its
@@ -10,7 +10,7 @@ double get_value(string s);
 //------------------------------------------------------------------------------
 // Associates a new numeric value with a previously declared user variable string, 
 
-double reset_value();
+double reset_value(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Checks to see if a string  has previously been declared as a variable
@@ -28,24 +28,24 @@ double define_name(string var, double val);
 // Evaluates expressions grouped within '{}'and returns the value 
 
 
-double braces();
+double braces(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Evaluates expressions grouped within '()'and returns the value
 
-double parenthesis();
+double parenthesis(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Returns the square root of the user's inputted expression
 
-double squareroot();
+double squareroot(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Returns input 'x' to the power of input 'i'
 // The '(', ')', and ',' in the input "pow(x,i)" are ignored and not treated 
 // as an expression. Only the user's inputted numeric values are used in the function
 
-double powerfunc();
+double powerfunc(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Calculates the factorial of a primary and returns the result
@@ -57,31 +57,31 @@ double calculate_fac(double fac);
 // Calculates multiplication of a term by a factorial or primary and returns the result.
 // Gets next token from the token stream for further evaluation
 
-void multiply(double& left, Token& t);
+void multiply(double& left, Token& t, Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Calculates division of a term by a factorial or primary and returns the result.
 // Gets next token from the token stream for further evaluation
 
-void divide(double& left, Token& t);
+void divide(double& left, Token& t, Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Calculates modulo of a term by a factorial or primary and returns the result.
 // Gets next token from the token stream for further evaluation
 
-void modulo(double& left, Token& t);
+void modulo(double& left, Token& t, Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Calculates addition of terms within expression.
 // Gets next token from the token stream for further evaluation
 
-void add(double& left, Token& t);
+void add(double& left, Token& t, Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Calculates subtraction of terms within expression.
 // Gets next token from the token stream for further evaluation
 
-void subtract(double& left, Token& t);
+void subtract(double& left, Token& t, Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Displays calclulator instructions when user enters "help"
@@ -94,7 +94,7 @@ void helpdisplay();
 // Passes the 'print' character ';' to ignore() ensuring it is not included in proceeding 
 // expression evaluations 
 
-void clean_up_mess();
+void clean_up_mess(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Grammar Functions Section
@@ -109,27 +109,27 @@ void clean_up_mess();
 // Calls squareroot() and powerfunc() when the user has inputted "sqrt()" or "pow()"
 // Returns error if incorrect syntax is used
 
-double primary();
+double primary(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Gets next token from token stream and calls calculatefac() when a factioral denoted by '!' is used
 // All tokens other than '!' are put back into the token stream
 
-double factorial();
+double factorial(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Gets next token from token stream and evaluates a term. Calls multiply(), divide(),
 // or modulo() when multiplication, diviion, or modulo denoted by '*', '/', or '%' are used
 // All tokens other than '*', '/', and '%' are put back into the token stream
 
-double term();
+double term(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Gets next token from the token stream and evaluates expressions. Calls add() and 
 // subract() when addition or subtraction denoted by '+' and '-' are used
 // All tokens other than '+' and '-' are returned to the token stream
 
-double expression();
+double expression(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Creates user declared string variable with its associated numerical value
@@ -137,14 +137,14 @@ double expression();
 // Checks that user has properly declared the variable with the format "x = expression"
 // Returns the numerical value of the user defined string variable
 
-double declaration();
+double declaration(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Gets the next token from the token stream and if it is a "let" token (i.e. user input "let x = 3")
 // returns declaration(), which creates a user declared variable from the user's inputted string and numeric value
 // All other tokens are returned to the token stream for further evaluation
 
-double statement();
+double statement(Token_stream& myts);
 
 //------------------------------------------------------------------------------
 //
@@ -160,4 +160,4 @@ void blink_prompt();
 // Checks for errors in individual expressions and outputs error messages while allowing
 // the evaluation of all other expressions by calling clean_up_mess() 
 
-void calculate();
+void calculate(Token_stream& myts);

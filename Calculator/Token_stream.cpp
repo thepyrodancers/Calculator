@@ -83,6 +83,7 @@ Token Token_stream::get()
             return Token{ name, s };
         }
         error("Bad token");
+        return 1;
     }
     }
 }
