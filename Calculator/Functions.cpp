@@ -137,7 +137,9 @@ double braces()
 }
 
 //------------------------------------------------------------------------------
-//
+// Gets tokens made from user input from Token_stream. Returns errors if incorrect syntax is used.
+// Evaluates the expression within the parenthesis of the "sqrt()" user input.
+// Returns the squareroot of the expression.
 
 double squareroot()
 {
@@ -145,8 +147,6 @@ double squareroot()
     if (t.kind != '(') {
         error("'(' expected");
     }
-    ts.putback(t);
-    ts.ignore('(');
     double e = expression();
     if (e < 0) {
         error("Square Root of Negative");
@@ -159,7 +159,10 @@ double squareroot()
 }
 
 //------------------------------------------------------------------------------
-//
+// Gets tokens made from user input from Token_stream. Returns errors if incorrect syntax is used.
+// Evaluates the expression within the parenthesis of the user input pow() and returns 
+// that expression the the power specified by the user.
+
 
 double powerfunc()
 {
@@ -167,15 +170,11 @@ double powerfunc()
     if (t.kind != '(') {
         error("'(' expected");
     }
-    ts.putback(t);
-    ts.ignore('(');
     double x = expression();
     Token t2 = ts.get();
     if (t2.kind != ',') {
         error("',' expected");
     }
-    ts.putback(t2);
-    ts.ignore(',');
     int i = narrow_cast<int>(expression());
     Token t3 = ts.get();
     if (t3.kind != ')') {
@@ -185,7 +184,9 @@ double powerfunc()
 }
 
 //------------------------------------------------------------------------------
-//
+// Multiplies each number by the next lowest number starting with the user input until 1 is reached.
+// Example: 5! = 5*4*3*2*1
+// Returns the result.
 
 double calculate_fac(double fact)
 {
@@ -199,7 +200,9 @@ double calculate_fac(double fact)
 }
 
 //------------------------------------------------------------------------------
-//
+// Sets variable "left" in term() to the result of factorial() multiplied by "left" 
+// as it is passed by reference.
+// Gets next token from Token_stream, which is passed by reference back to term()
 
 void multiply(double& left, Token& t)
 {
@@ -208,7 +211,9 @@ void multiply(double& left, Token& t)
 }
 
 //------------------------------------------------------------------------------
-//
+// Sets double 'd' to the result of factorial(). Variable "left" from term() is 
+// set to "left" divided by double 'd' as it is passed by reference.
+// Gets next token from Token_stream, which is passed by reference back to term().
 
 void divide(double& left, Token& t)
 {
@@ -494,7 +499,6 @@ void calculate()
                 cerr << e.what() << '\n';
                 cin.putback(print);
                 clean_up_mess();
-                break;
             }
         }
     }
