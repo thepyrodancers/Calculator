@@ -451,29 +451,10 @@ double statement()
     }
 }
 
-//------------------------------------------------------------------------------
-//
-
-void blink_prompt()
-{
-    while (!_kbhit()) {
-        cout << prompt;
-        for (int i = 0; i < INT_MAX; ++i)
-        {
-            Sleep(500);
-            cout << "\b" << " ";
-            Sleep(500);
-            cout << "\b" << prompt;
-            if (_kbhit())
-                break;
-        }
-    }
-}
-
 void calculate()
 {
     while (cin) {
-        blink_prompt();
+        cout << prompt;
         while (cin) {
             try {
                 Token t = ts.get();
