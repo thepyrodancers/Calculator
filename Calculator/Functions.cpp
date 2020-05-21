@@ -163,12 +163,12 @@ double powerfunc(Token_stream& myts)
         error("'(' expected");
     }
     double x = expression(myts);
-    Token t2 = ts.get();
+    Token t2 = myts.get();
     if (t2.kind != ',') {
         error("',' expected");
     }
     int i = narrow_cast<int>(expression(myts));
-    Token t3 = ts.get();
+    Token t3 = myts.get();
     if (t3.kind != ')') {
         error("')' expected");
     }
@@ -443,7 +443,7 @@ double statement(Token_stream& myts)
     }
 }
 
-void calculate()
+void calculate(Token_stream& myts)
 {
     while (cin) {
         cout << prompt;
@@ -471,7 +471,6 @@ void calculate()
             catch (exception& e) {
                 cerr << e.what() << '\n';
                 cin.putback(print);
-                clean_up_mess();
             }
         }
     }
