@@ -38,7 +38,6 @@ Number :
 #include "Errors.h"
 #include "Functions.h"
 #include "Token_stream.h"
-#include "Calculator.h"
 
 using std::cin;
 using std::cout;
@@ -53,13 +52,16 @@ using std::exception;
 
 int main()
 try {
+    Token_stream myts;
+    vector<Variable> var_table;
+
     cout << "       D(umb) & A(ss) Enterprises\n               presents: \n    A COMPLEX SIMPLE CALCULATOR!\n\n";
     cout << "You may enter 'help' for instructions or 'q' to quit at anytime.\n\n";
-    define_name("pi", 3.1415926535);
-    define_name("e", 2.7182818284);
-    define_name("k", 1000);
+    define_name("pi", 3.1415926535, var_table);
+    define_name("e", 2.7182818284, var_table);
+    define_name("k", 1000, var_table);
 
-    calculate(myts);
+    calculate(myts, var_table);
     return 0;
 }
 catch (exception& e) {
