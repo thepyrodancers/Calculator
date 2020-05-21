@@ -318,8 +318,18 @@ double primary(Token_stream& myts, vector<Variable>& var_table)
         return powerfunc(myts, var_table);
     }
     default:
-        
-        error("primary expected");
+        char ch = 0;
+        cin >> ch;
+        if (ch != print) {
+            if (cin.get() == '\n') {
+                cout << "Enter ';' to end expression.\n";
+            }
+            else {
+                cin.unget();
+                error("Error: primary expected");
+            }
+        }
+        error("Error: primary expected");
     }
 }
 
@@ -457,7 +467,9 @@ void calculate(Token_stream& myts, vector<Variable> var_table)
             }
             if (t.kind == help) {
                 helpdisplay();
-                break;
+                cout << prompt;
+                t = myts.get();
+
             }
             if (t.kind == quit) {
                 return;

@@ -6,8 +6,8 @@
 #include "Errors.h"
 
 using std::cin;
+using std::cout;
 using std::string;
-
 
 //------------------------------------------------------------------------------
 // This constructor initializes Token_stream's buffer to be empty and overwritable
@@ -16,7 +16,6 @@ Token_stream::Token_stream()
     :full(false), buffer(0)
 {
 }
-
 
 //------------------------------------------------------------------------------
 // Evaluates the buffer and assembles and returns a Token(char ch), Token(char ch , double val),
@@ -30,6 +29,14 @@ Token Token_stream::get()
     }
     char ch;
     cin >> ch;
+    if(ch != print)
+        if (cin.get() == '\n') {
+            cout << "Enter ';' to end expression and get the result.\n";
+           // error("Enter ';' to end the expression");
+        }
+        else {
+            cin.unget();
+        }
     switch (ch) {
     case quit:
     case print:
@@ -114,6 +121,7 @@ void Token_stream::ignore(char c)
     char ch = 0;
     while (cin >> ch) {
         if (ch == c) {
+
             return;
         }
     }
