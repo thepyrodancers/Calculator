@@ -12,13 +12,10 @@
 class Token_stream {
 public:
     Token_stream();
-    Token get(Token_stream& myts);
-    void putback(Token t, Token_stream& myts);
+    Token get();
+    void putback(Token t);
     void ignore(char c);
-    bool get_err(Token_stream& myts);
-    void set_err(bool temp, Token_stream& myts);
 private:
     bool full;
-    bool err_oc;
     Token buffer;
 };
