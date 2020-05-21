@@ -32,6 +32,7 @@ double get_value(string s, vector<Variable>& var_table)
             return var_table[i].value;
         }
     }
+    cin.putback(print);
     error("get: undefined variable ", s);
 }
 
@@ -59,7 +60,7 @@ double reset_value(Token_stream& myts, vector<Variable>& var_table)
             return d;
         }
     }
-    error("set: undefined variable ", var_name);
+    error("reset: undefined variable ", var_name);
 }
 
 //------------------------------------------------------------------------------
@@ -141,6 +142,7 @@ double squareroot(Token_stream& myts, vector<Variable>& var_table)
     }
     Token t2 = myts.get();
     if (t2.kind != ')') {
+        myts.putback(t2);
         error("')' expected");
     }
     return sqrt(e);
@@ -160,11 +162,13 @@ double powerfunc(Token_stream& myts, vector<Variable>& var_table)
     double x = expression(myts, var_table);
     Token t2 = myts.get();
     if (t2.kind != ',') {
+        myts.putback(t2);
         error("',' expected");
     }
     int i = narrow_cast<int>(expression(myts, var_table));
     Token t3 = myts.get();
     if (t3.kind != ')') {
+        myts.putback(t3);
         error("')' expected");
     }
     return pow(x, i);
@@ -314,6 +318,7 @@ double primary(Token_stream& myts, vector<Variable>& var_table)
         return powerfunc(myts, var_table);
     }
     default:
+        
         error("primary expected");
     }
 }
@@ -444,7 +449,6 @@ void calculate(Token_stream& myts, vector<Variable> var_table)
     Token t;
 
     cout << prompt;
-
     while (cin){
         try {
             t = myts.get();
@@ -468,12 +472,12 @@ void calculate(Token_stream& myts, vector<Variable> var_table)
         }
         catch (exception& e) {
             cerr << e.what() << '\n';
+                clean_up_mess(myts);
             if (cin.get() == '\n') {
                 cout << prompt;
             }
             else
-                cin.unget();
-            cin.putback(print);    
+                cin.unget();  
         }
     }
 }
