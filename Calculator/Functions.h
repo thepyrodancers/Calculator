@@ -9,7 +9,7 @@ using std::vector;
 // Searches through the variable table to find the inputted variable and returns its
 // corresponding numeric value. The variable must be previously declared by the user
 
-double get_value(string s, vector<Variable>& var_table);
+double get_value(string s, vector<Variable>& var_table, Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Associates a new numeric value with a previously declared user variable string, 
@@ -26,7 +26,7 @@ bool is_declared(string var, vector<Variable>& var_table);
 // Adds a new user defined string variable to the table of variables if
 // that string hasn't already been declared by the user previously
 
-double define_name(string var, double val, vector<Variable>& var_table);
+double define_name(string var, double val, vector<Variable>& var_table, Token_stream& myts);
 
 //------------------------------------------------------------------------------
 // Evaluates expressions grouped within '{}'and returns the value 

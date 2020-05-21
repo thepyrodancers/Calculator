@@ -13,7 +13,7 @@ using std::string;
 // This constructor initializes Token_stream's buffer to be empty and overwritable
 
 Token_stream::Token_stream()
-    :full(false), buffer(0)
+    :full(false), buffer(0), err_oc(false)
 {
 }
 
@@ -22,7 +22,7 @@ Token_stream::Token_stream()
 // Evaluates the buffer and assembles and returns a Token(char ch), Token(char ch , double val),
 // or Token(char ch, string n) depending on the input being read
 
-Token Token_stream::get()
+Token Token_stream::get(Token_stream& myts)
 {
     if (full) {
         full = false; // Buffer can be overwritten
@@ -82,6 +82,7 @@ Token Token_stream::get()
             }
             return Token{ name, s };
         }
+        myts.set_err(true, myts);
         error("Bad token");
         return 1;
     }
@@ -92,9 +93,12 @@ Token Token_stream::get()
 // The current token is placed back into the buffer after evaluation so that it may
 // further evaluated by proceeding functions
 
-void Token_stream::putback(Token t)
+void Token_stream::putback(Token t, Token_stream& myts)
 {
-    if (full) error("putback() into a full buffer");
+    if (full) {
+        myts.set_err(true, myts);
+        error("putback() into a full buffer");
+    }
     buffer = t;
     full = true; //Buffer cannot be overwritten
 }
@@ -117,4 +121,14 @@ void Token_stream::ignore(char c)
             return;
         }
     }
+}
+
+bool Token_stream::get_err(Token_stream& myts)
+{
+    return myts.err_oc;
+}
+
+void Token_stream::set_err(bool temp, Token_stream& myts)
+{
+    myts.err_oc = temp;
 }
