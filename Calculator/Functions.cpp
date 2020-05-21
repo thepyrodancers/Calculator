@@ -465,35 +465,37 @@ void calculate(Token_stream& myts, vector<Variable> var_table)
 {
     Token t;
 
+    cout << prompt;
     while (cin) {
-        if (!myts.get_err(myts))
-            cout << prompt;
-        while (cin) {
-            try {
+        try {
+            t = myts.get(myts);
+            while (t.kind == print) {
                 t = myts.get(myts);
-                while (t.kind == print) {
-                    t = myts.get(myts);
-                }
-                if (t.kind == help) {
-                    helpdisplay();
-                    break;
-                }
-                if (t.kind == quit) {
-                    return;
-                }
-                myts.putback(t, myts);
-                cout << result << statement(myts, var_table) << '\n';
-                if (cin.get() == '\n') {
-                    myts.set_err(false, myts);
-                    break;
-                }
-                else 
-                    cin.unget();
+
             }
-            catch (exception& e) {
-                cerr << e.what() << '\n';
-                cin.putback(print);
+            if (t.kind == help) {
+                helpdisplay();
+                break;
             }
+            if (t.kind == quit) {
+                return;
+            }
+            myts.putback(t, myts);
+            cout << result << statement(myts, var_table) << '\n';
+            if (cin.get() == '\n') {
+                cout << prompt;
+            }
+            else 
+                cin.unget();
+        }
+        catch (exception& e) {
+            cerr << e.what() << '\n';
+            if (cin.get() == '\n') {
+                cout << prompt;
+            }
+            else
+                cin.unget();
+            cin.putback(print);
         }
     }
 }
