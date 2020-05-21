@@ -130,7 +130,9 @@ double braces(Token_stream& myts)
 }
 
 //------------------------------------------------------------------------------
-//
+// Gets tokens made from user input from Token_stream. Returns errors if incorrect syntax is used.
+// Evaluates the expression within the parenthesis of the "sqrt()" user input.
+// Returns the squareroot of the expression.
 
 double squareroot(Token_stream& myts)
 {
@@ -138,8 +140,6 @@ double squareroot(Token_stream& myts)
     if (t.kind != '(') {
         error("'(' expected");
     }
-    myts.putback(t);
-    myts.ignore('(');
     double e = expression(myts);
     if (e < 0) {
         error("Square Root of Negative");
@@ -152,7 +152,9 @@ double squareroot(Token_stream& myts)
 }
 
 //------------------------------------------------------------------------------
-//
+// Gets tokens made from user input from Token_stream. Returns errors if incorrect syntax is used.
+// Evaluates the expression within the parenthesis of the user input pow() and returns 
+// that expression the the power specified by the user.
 
 double powerfunc(Token_stream& myts)
 {
@@ -160,17 +162,13 @@ double powerfunc(Token_stream& myts)
     if (t.kind != '(') {
         error("'(' expected");
     }
-    myts.putback(t);
-    myts.ignore('(');
     double x = expression(myts);
-    Token t2 = myts.get();
+    Token t2 = ts.get();
     if (t2.kind != ',') {
         error("',' expected");
     }
-    myts.putback(t2);
-    myts.ignore(',');
     int i = narrow_cast<int>(expression(myts));
-    Token t3 = myts.get();
+    Token t3 = ts.get();
     if (t3.kind != ')') {
         error("')' expected");
     }
@@ -178,7 +176,9 @@ double powerfunc(Token_stream& myts)
 }
 
 //------------------------------------------------------------------------------
-//
+// Multiplies each number by the next lowest number starting with the user input until 1 is reached.
+// Example: 5! = 5*4*3*2*1
+// Returns the result.
 
 double calculate_fac(double fact)
 {
@@ -192,7 +192,9 @@ double calculate_fac(double fact)
 }
 
 //------------------------------------------------------------------------------
-//
+// Sets variable "left" in term() to the result of factorial() multiplied by "left" 
+// as it is passed by reference.
+// Gets next token from Token_stream, which is passed by reference back to term()
 
 void multiply(double& left, Token& t, Token_stream& myts)
 {
@@ -201,7 +203,9 @@ void multiply(double& left, Token& t, Token_stream& myts)
 }
 
 //------------------------------------------------------------------------------
-//
+// Sets double 'd' to the result of factorial(). Variable "left" from term() is 
+// set to "left" divided by double 'd' as it is passed by reference.
+// Gets next token from Token_stream, which is passed by reference back to term().
 
 void divide(double& left, Token& t, Token_stream& myts)
 {
@@ -439,29 +443,10 @@ double statement(Token_stream& myts)
     }
 }
 
-//------------------------------------------------------------------------------
-//
-
-void blink_prompt()
-{
-    while (!_kbhit()) {
-        cout << prompt;
-        for (int i = 0; i < INT_MAX; ++i)
-        {
-            Sleep(500);
-            cout << "\b" << " ";
-            Sleep(500);
-            cout << "\b" << prompt;
-            if (_kbhit())
-                break;
-        }
-    }
-}
-
-void calculate(Token_stream& myts)
+void calculate()
 {
     while (cin) {
-        blink_prompt();
+        cout << prompt;
         while (cin) {
             try {
                 Token t = myts.get();
@@ -486,8 +471,7 @@ void calculate(Token_stream& myts)
             catch (exception& e) {
                 cerr << e.what() << '\n';
                 cin.putback(print);
-                clean_up_mess(myts);
-                break;
+                clean_up_mess();
             }
         }
     }
