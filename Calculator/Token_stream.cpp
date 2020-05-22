@@ -17,6 +17,18 @@ Token_stream::Token_stream()
 {
 }
 
+bool new_line(char& ch)
+{
+    if (cin.get() == '\n') {
+        ch = ';';
+        return true;
+    }
+    else {
+        cin.unget();
+        return false;
+    }
+}
+
 //------------------------------------------------------------------------------
 // Evaluates the buffer and assembles and returns a Token(char ch), Token(char ch , double val),
 // or Token(char ch, string n) depending on the input being read
