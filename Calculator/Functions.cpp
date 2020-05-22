@@ -9,6 +9,7 @@
 #include "Functions.h"
 #include "Token_stream.h"
 
+
 using std::cin;
 using std::cout;
 using std::vector;
@@ -125,6 +126,36 @@ double braces(Token_stream& myts, vector<Variable>& var_table)
     return c;
 }
 
+double neg_exp(Token_stream& myts, vector<Variable>& var_table)
+{
+    Token t2 = myts.get();
+    if (t2.kind == '-') {
+
+        error("Error: Primary expected (-)");
+        
+    }
+    else {
+        myts.putback(t2);
+        cin.putback('\n');
+        return -primary(myts, var_table);
+    }
+}
+
+double pos_exp(Token_stream& myts, vector<Variable>& var_table)
+{
+    Token t2 = myts.get();
+    if (t2.kind == '+') {
+
+        error("Error: Primary expected (+)");
+
+    }
+    else {
+        myts.putback(t2);
+        cin.putback('\n');
+        return primary(myts, var_table);
+    }
+}
+
 //------------------------------------------------------------------------------
 // Gets tokens made from user input from Token_stream. Returns errors if incorrect syntax is used.
 // Evaluates the expression within the parenthesis of the "sqrt()" user input.
@@ -233,6 +264,8 @@ void add(double& left, Token& t, Token_stream& myts, vector<Variable>& var_table
 {
     left += term(myts, var_table);
     t = myts.get();
+    cin.unget();
+
 }
 
 //------------------------------------------------------------------------------
@@ -242,6 +275,7 @@ void subtract(double& left, Token& t, Token_stream& myts, vector<Variable>& var_
 {
     left -= term(myts, var_table);
     t = myts.get();
+    cin.unget();
 }
 
 //------------------------------------------------------------------------------
@@ -295,11 +329,11 @@ double primary(Token_stream& myts, vector<Variable>& var_table)
 
     case '-':
     {
-        return -primary(myts, var_table);
+        return neg_exp(myts, var_table);
     }
     case '+':
-    {
-        return primary(myts, var_table);
+    {   
+        return pos_exp(myts, var_table);
     }
     case number:
     {
@@ -318,18 +352,9 @@ double primary(Token_stream& myts, vector<Variable>& var_table)
         return powerfunc(myts, var_table);
     }
     default:
-        char ch = 0;
-        cin >> ch;
-        if (ch != print) {
-            if (cin.get() == '\n') {
-                cout << "Enter ';' to end expression.\n";
-            }
-            else {
-                cin.unget();
-                error("Error: primary expected");
-            }
-        }
-        error("Error: primary expected");
+        cin.unget();
+        error("Error: Primary expected");
+        cin.putback(print); 
     }
 }
 
@@ -468,8 +493,6 @@ void calculate(Token_stream& myts, vector<Variable> var_table)
             if (t.kind == help) {
                 helpdisplay();
                 cout << prompt;
-                t = myts.get();
-
             }
             if (t.kind == quit) {
                 return;
@@ -488,8 +511,9 @@ void calculate(Token_stream& myts, vector<Variable> var_table)
             if (cin.get() == '\n') {
                 cout << prompt;
             }
-            else
-                cin.unget();  
+            else {
+                cin.unget();
+            }
         }
     }
 }

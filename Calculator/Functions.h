@@ -40,6 +40,16 @@ double braces(Token_stream& myts, vector<Variable>& var_table);
 double parenthesis(Token_stream& myts, vector<Variable>& var_table);
 
 //------------------------------------------------------------------------------
+// 
+
+double neg_exp(Token_stream& myts, vector<Variable>& var_table);
+
+//------------------------------------------------------------------------------
+// 
+
+double pos_exp(Token_stream& myts, vector<Variable>& var_table);
+
+//------------------------------------------------------------------------------
 // Returns the square root of the user's inputted expression
 
 double squareroot(Token_stream& myts, vector<Variable>& var_table);

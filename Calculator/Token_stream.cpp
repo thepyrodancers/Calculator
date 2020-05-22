@@ -40,15 +40,7 @@ Token Token_stream::get()
         return buffer; // Returns token currently in buffer
     }
     char ch;
-    cin >> ch;
-    if(ch != print)
-        if (cin.get() == '\n') {
-            cout << "Enter ';' to end expression and get the result.\n";
-           // error("Enter ';' to end the expression");
-        }
-        else {
-            cin.unget();
-        }
+    if (!new_line(ch)) cin >> ch;
     switch (ch) {
     case quit:
     case print:
@@ -132,8 +124,9 @@ void Token_stream::ignore(char c)
     full = false;
     char ch = 0;
     while (cin >> ch) {
+        new_line(ch);
         if (ch == c) {
-
+            cin.unget();
             return;
         }
     }
