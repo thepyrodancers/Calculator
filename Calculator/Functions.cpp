@@ -47,11 +47,13 @@ double reset_value(Token_stream& myts, vector<Variable>& var_table)
 {
     Token t = myts.get();
     if (t.kind != name) {
+        cin.putback(print);
         error("name expected in declaration");
     }
     string var_name = t.name;
     Token t2 = myts.get();
     if (t2.kind != '=') {
+        cin.putback(print);
         error("= missing in declaration of ", var_name);
     }
     double d = expression(myts, var_table);
@@ -105,6 +107,7 @@ double parenthesis(Token_stream& myts, vector<Variable>& var_table)
     double c = expression(myts, var_table);
     Token t = myts.get();
     if (t.kind != ')') {
+        cin.putback(print);
         error("')' expected");
     }
     return c;
@@ -121,6 +124,7 @@ double braces(Token_stream& myts, vector<Variable>& var_table)
     double c = expression(myts, var_table);
     Token t = myts.get();
     if (t.kind != '}') {
+        cin.putback(print);
         error("'}' expected");
     }
     return c;
@@ -130,13 +134,10 @@ double neg_exp(Token_stream& myts, vector<Variable>& var_table)
 {
     Token t2 = myts.get();
     if (t2.kind == '-') {
-
         error("Error: Primary expected (-)");
-        
     }
     else {
         myts.putback(t2);
-        cin.putback('\n');
         return -primary(myts, var_table);
     }
 }
@@ -151,7 +152,6 @@ double pos_exp(Token_stream& myts, vector<Variable>& var_table)
     }
     else {
         myts.putback(t2);
-        cin.putback('\n');
         return primary(myts, var_table);
     }
 }
@@ -169,6 +169,7 @@ double squareroot(Token_stream& myts, vector<Variable>& var_table)
     }
     double e = expression(myts, var_table);
     if (e < 0) {
+        cin.putback(print);
         error("Square Root of Negative");
     }
     Token t2 = myts.get();
@@ -194,6 +195,7 @@ double powerfunc(Token_stream& myts, vector<Variable>& var_table)
     Token t2 = myts.get();
     if (t2.kind != ',') {
         myts.putback(t2);
+        cin.putback(print);
         error("',' expected");
     }
     int i = narrow_cast<int>(expression(myts, var_table));
@@ -264,7 +266,6 @@ void add(double& left, Token& t, Token_stream& myts, vector<Variable>& var_table
 {
     left += term(myts, var_table);
     t = myts.get();
-    cin.unget();
 
 }
 
@@ -275,7 +276,6 @@ void subtract(double& left, Token& t, Token_stream& myts, vector<Variable>& var_
 {
     left -= term(myts, var_table);
     t = myts.get();
-    cin.unget();
 }
 
 //------------------------------------------------------------------------------
@@ -285,7 +285,7 @@ void helpdisplay()
 {
     cout << "\nYou may enter expressions using integers or floating - point numbers.\n";
     cout << "You may use '{', '}','(', & ')' to denote modifications to the normal order of mathematical operations.\n";
-    cout << "End your expressions with ';' to get a result.\n\n";
+    cout << "You may enter multiple expressions seperated by ';'.\n\n";
     cout << "Operators:\n";
     cout << "   Addition: '+', Subtraction: '-', Multiplication: '*', Division: '/', Modulo: '%',\n";
     cout << "   Squareroot: 'sqrt(your expression here)', Power: 'pow(your expression here, exponent integer here)',\n";
@@ -332,7 +332,7 @@ double primary(Token_stream& myts, vector<Variable>& var_table)
         return neg_exp(myts, var_table);
     }
     case '+':
-    {   
+    {
         return pos_exp(myts, var_table);
     }
     case number:
@@ -354,7 +354,7 @@ double primary(Token_stream& myts, vector<Variable>& var_table)
     default:
         cin.unget();
         error("Error: Primary expected");
-        cin.putback(print); 
+        cin.putback(print);
     }
 }
 
@@ -445,11 +445,13 @@ double declaration(Token_stream& myts, vector<Variable>& var_table)
 {
     Token t = myts.get();
     if (t.kind != name) {
+        cin.putback(print);
         error("name expected in declaration");
     }
     string var_name = t.name;
     Token t2 = myts.get();
     if (t2.kind != '=') {
+        cin.putback(print);
         error("= missing in declaration of ", var_name);
     }
     double d = expression(myts, var_table);
@@ -492,13 +494,14 @@ void calculate(Token_stream& myts, vector<Variable> var_table)
             }
             if (t.kind == help) {
                 helpdisplay();
-                cout << prompt;
             }
             if (t.kind == quit) {
                 return;
             }
-            myts.putback(t);
-            cout << result << statement(myts, var_table) << '\n';
+            if (t.kind != help) {
+                myts.putback(t);
+                cout << result << statement(myts, var_table) << '\n';
+            }
             if (cin.get() == '\n') {
                 cout << prompt;
             }

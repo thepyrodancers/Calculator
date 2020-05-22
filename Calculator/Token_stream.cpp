@@ -41,6 +41,7 @@ Token Token_stream::get()
     }
     char ch;
     if (!new_line(ch)) cin >> ch;
+    else cin.putback('\n');
     switch (ch) {
     case quit:
     case print:
