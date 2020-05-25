@@ -1,20 +1,20 @@
 /*
- Aaron's Calculator Code
+Simple Calculator
 
 This program implements a basic expression calculator.
-Input from cin; output to cout.
+Input comes from cin through the Token_stream called "tkn_strm"; output to cout.
 The grammar for input is :
 Calculation:
     Statement
     Print ';'
     Quit 'q'
 Statement:
-    Declaration
+    Declaration (of variable)
     Expression
 Expression :
     Term
     Expression + Term
-    Expression – Term
+    Expression - Term
 Term :
     Primary
     Term * Primary
@@ -25,20 +25,19 @@ Factorial:
 Primary :
     Number
     (Expression)
-    – Primary
+    - Primary
     + Primary
-    Name (variable)
+    Name (Variable)
     sqrt(Expression)
     pow(x,i)
 Number :
     floating - point - literal
-
-Input comes from cin through the Token_stream called ts.
 */
 
 #include <iostream>
 #include "Errors.h"
 #include "Functions.h"
+#include "Token_stream.h"
 
 using std::cin;
 using std::cout;
@@ -53,19 +52,16 @@ using std::exception;
 
 int main()
 try {
-    cout << "Welcome to our simple calculator. \nPlease enter expressions using floating-point numbers.\n";
-    cout << "You may use '+' for addition, '-' for subtraction (or negative numbers), '*' for multiplication,\n";
-    cout << "'/' for division, '%' for modulo, or follow a number or variable with '!' to get its factorial.\n";
-    cout << "You may use '(', ')','{', & '}' to denote modifications to the normal order of mathematical operations.\n";
-    cout << "You may define a variable by typing 'let (your variable here) = (your expression here)'.\n";
-    cout << "Variables must start with an alpha character and contain no spaces.\n";
-    cout << "End your expressions with ';' to get a result. Enter 'q' to quit at any time.\n\n";
-    
-    define_name("pi", 3.1415926535);
-    define_name("e", 2.7182818284);
-    define_name("k", 1000);
+    Token_stream tkn_strm;
+    vector<Variable> var_table;
 
-    calculate();
+    cout << "       D(umb) & A(ss) Enterprises\n               presents: \n    A COMPLEX SIMPLE CALCULATOR!\n\n";
+    cout << "You may enter 'help' for instructions or 'q' to quit at anytime.\n\n";
+    define_name("pi", 3.1415926535, var_table);
+    define_name("e", 2.7182818284, var_table);
+    define_name("k", 1000, var_table);
+
+    calculate(tkn_strm, var_table);
     return 0;
 }
 catch (exception& e) {

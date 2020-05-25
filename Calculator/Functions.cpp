@@ -7,6 +7,7 @@
 #include "Functions.h"
 #include "Token_stream.h"
 
+
 using std::cin;
 using std::cout;
 using std::vector;
@@ -14,37 +15,66 @@ using std::cerr;
 using std::exception;
 
 //------------------------------------------------------------------------------
-// A table for holding user declared variables
-
-vector<Variable> var_table;
+// Calculation Functions Section
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-// Initializes the Token_stream "ts"
+// Searches through vector "var_table" for argument "string s"; if a match
+// is found, returns the value property of that vector element
+// If a match for argument "string s" is not found "print" (;) is returned to the input stream
+// and an error is thrown
 
-Token_stream ts;
-
-double get_value(string s)
+double get_value(string s, vector<Variable>& var_table)
 {
     for (int i = 0; i < var_table.size(); ++i) {
         if (var_table[i].name == s) {
             return var_table[i].value;
         }
     }
+    cin.putback(print);
     error("get: undefined variable ", s);
 }
 
-void set_value(string s, double d)
+//------------------------------------------------------------------------------
+// Searches through vector "var_table" for argument "string s"; if a match
+// is found, the value property of that vector member is set to argument "double d"
+// If a match for argument "string s" is not found "print" (;) is returned to the input stream
+// and an error is thrown
+
+double reset_value(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    for (int i = 0; i < var_table.size(); ++i) {
-        if (var_table[i].name == s) {
-            var_table[i].value = d;
-            return;
-        }
-        error("set: undefined variable ", s);
+    Token tkn;
+    Token tkn2;
+    double expr;
+    string var_name;
+
+    tkn = tkn_strm.get();
+    if (tkn.kind != name) {
+        cin.putback(print);
+        error("name expected in declaration");
     }
+    var_name = tkn.name;
+    tkn2 = tkn_strm.get();
+    if (tkn2.kind != '=') {
+        cin.putback(print);
+        error("= missing in declaration of ", var_name);
+    }
+    expr = expression(tkn_strm, var_table);
+    for (int i = 0; i < var_table.size(); ++i) {
+        if (var_table[i].name == var_name) {
+            var_table[i].value = expr;
+            return expr;
+        }
+    }
+    error("reset: undefined variable ", var_name);
 }
 
-bool is_declared(string var)
+//------------------------------------------------------------------------------
+// Searches through vector "var_table" for argument "string var"; if a match is
+// found, bool is_declared(string var) returns true and if a match is not found
+// returns false
+
+bool is_declared(string var, vector<Variable>& var_table)
 {
     for (int i = 0; i < var_table.size(); ++i)
         if (var_table[i].name == var) {
@@ -53,252 +83,485 @@ bool is_declared(string var)
     return false;
 }
 
-double define_name(string var, double val)
+//------------------------------------------------------------------------------
+// Calls function "is_declared" passing the argument "string var" to check if 
+// argument "string var" has already been declared (returns true). If it has been 
+// declared an error is thrown. If argument "string var" has NOT been previously declared
+// (returns false), it is then added to vector "var_table" along with the value property argument
+//  "double val" and value property "double val" is returned
+
+double define_name(string var, double val, vector<Variable>& var_table)
 {
-    if (is_declared(var)) {
-        error(var, " declared twice");
+    if (is_declared(var, var_table)) {
+        error(var, " previously declared; use 'reset' to change the value.");
     }
     var_table.push_back(Variable{ var, val });
     return val;
 }
 
-double squareroot()
+//------------------------------------------------------------------------------
+// "double c" is set to the result of function "expression()", Token t is set to
+// the next token in Token_stream 'ts', which is returned by  function "ts.get()"
+// If the kind property of the token is not a ')' an error is thrown
+// "double c" is returned
+
+double parenthesis(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t = ts.get();
-    if (t.kind != '(') {
+    Token tkn;
+    double expr;
+
+    expr = expression(tkn_strm, var_table);
+    tkn = tkn_strm.get();
+    if (tkn.kind != ')') {
+        cin.putback(print);
+        error("')' expected");
+    }
+    return expr;
+}
+
+//------------------------------------------------------------------------------
+// "double c" is set to the result of function "expression()", Token t is set to
+// the next token in Token_stream 'ts', which is returned by  function "ts.get()"
+// If the "kind" property of the token is not a '}' an error is thrown
+// "double c" is returned
+
+double braces(Token_stream& tkn_strm, vector<Variable>& var_table)
+{
+    Token tkn;
+    double expr;
+
+    expr = expression(tkn_strm, var_table);
+    tkn = tkn_strm.get();
+    if (tkn.kind != '}') {
+        cin.putback(print);
+        error("'}' expected");
+    }
+    return expr;
+}
+
+double neg_exp(Token_stream& tkn_strm, vector<Variable>& var_table)
+{
+    Token tkn;
+
+    tkn = tkn_strm.get();
+    if (tkn.kind == '-') {
+        error("Error: Primary expected (-)");
+    }
+    else {
+        tkn_strm.putback(tkn);
+        return -primary(tkn_strm, var_table);
+    }
+}
+
+double pos_exp(Token_stream& tkn_strm, vector<Variable>& var_table)
+{
+    Token tkn;
+
+    tkn = tkn_strm.get();
+    if (tkn.kind == '+') {
+
+        error("Error: Primary expected (+)");
+
+    }
+    else {
+        tkn_strm.putback(tkn);
+        return primary(tkn_strm, var_table);
+    }
+}
+
+//------------------------------------------------------------------------------
+// Gets tokens made from user input from Token_stream. Returns errors if incorrect syntax is used.
+// Evaluates the expression within the parenthesis of the "sqrt()" user input.
+// Returns the squareroot of the expression.
+
+double squareroot(Token_stream& tkn_strm, vector<Variable>& var_table)
+{
+    Token tkn;
+    Token tkn2;
+    double expr;
+
+    tkn = tkn_strm.get();
+    if (tkn.kind != '(') {
         error("'(' expected");
     }
-    ts.putback(t);
-    ts.ignore('(');
-    double e = expression();
-    if (e < 0) {
+    expr = expression(tkn_strm, var_table);
+    if (expr < 0) {
+        cin.putback(print);
         error("Square Root of Negative");
     }
-    Token t2 = ts.get();
-    if (t2.kind != ')') {
+    tkn2 = tkn_strm.get();
+    if (tkn2.kind != ')') {
+        tkn_strm.putback(tkn2);
         error("')' expected");
     }
-    ts.putback(t2);
-    ts.ignore(')');
-    return sqrt(e);
+    return sqrt(expr);
 }
 
-double powerfunc()
+//------------------------------------------------------------------------------
+// Gets tokens made from user input from Token_stream. Returns errors if incorrect syntax is used.
+// Evaluates the expression within the parenthesis of the user input pow() and returns 
+// that expression the the power specified by the user.
+
+double powerfunc(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t = ts.get();
-    if (t.kind != '(') {
+    Token tkn;
+    Token tkn2;
+    Token tkn3;
+    double expr;
+    int exponent;
+
+    tkn = tkn_strm.get();
+    if (tkn.kind != '(') {
         error("'(' expected");
     }
-    ts.putback(t);
-    ts.ignore('(');
-    double x = expression();
-    Token t2 = ts.get();
-    if (t2.kind != ',') {
+    expr = expression(tkn_strm, var_table);
+    tkn2 = tkn_strm.get();
+    if (tkn2.kind != ',') {
+        tkn_strm.putback(tkn2);
+        cin.putback(print);
         error("',' expected");
     }
-    ts.putback(t2);
-    ts.ignore(',');
-    int i = narrow_cast<int>(expression());
-    Token t3 = ts.get();
-    if (t3.kind != ')') {
+    exponent = narrow_cast<int>(expression(tkn_strm, var_table));
+    tkn3 = tkn_strm.get();
+    if (tkn3.kind != ')') {
+        tkn_strm.putback(tkn3);
         error("')' expected");
     }
-    ts.putback(t3);
-    ts.ignore(')');
-    return pow(x, i);
+    return pow(expr, exponent);
 }
 
-double primary()
-{
+//------------------------------------------------------------------------------
+// Multiplies each number by the next lowest number starting with the user input until 1 is reached.
+// Example: 5! = 5*4*3*2*1
+// Returns the result.
 
-    Token t = ts.get();
-    switch (t.kind) {
+double calculate_fac(double fact)
+{
+    double x = fact;
+    double f = x;
+
+    for (int i = 0; i < fact - 1; ++i) {
+        f *= --x;
+    }
+    return f;
+}
+
+//------------------------------------------------------------------------------
+// Sets variable "left" in term() to the result of factorial() multiplied by "left" 
+// as it is passed by reference.
+// Gets next token from Token_stream, which is passed by reference back to term()
+
+void multiply(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
+{
+    left *= factorial(tkn_strm, var_table);
+    t = tkn_strm.get();
+}
+
+//------------------------------------------------------------------------------
+// Sets double 'd' to the result of factorial(). Variable "left" from term() is 
+// set to "left" divided by double 'd' as it is passed by reference.
+// Gets next token from Token_stream, which is passed by reference back to term().
+
+void divide(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
+{
+    double expr;
+
+    expr = factorial(tkn_strm, var_table);
+    if (expr == 0) error("divide by zero");
+    left /= expr;
+    t = tkn_strm.get();
+}
+
+//------------------------------------------------------------------------------
+//
+
+void modulo(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
+{
+    int expr1;
+    int expr2;
+
+    expr1 = narrow_cast<int>(left);
+    expr2= narrow_cast<int>(factorial(tkn_strm, var_table));
+    if (expr2 == 0) error("%: divide by zero");
+    left = expr1 % expr2;
+    t = tkn_strm.get();
+}
+
+//------------------------------------------------------------------------------
+//
+
+void add(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
+{
+    left += term(tkn_strm, var_table);
+    t = tkn_strm.get();
+
+}
+
+//------------------------------------------------------------------------------
+//
+
+void subtract(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
+{
+    left -= term(tkn_strm, var_table);
+    t = tkn_strm.get();
+}
+
+//------------------------------------------------------------------------------
+//
+
+void helpdisplay()
+{
+    cout << "\nYou may enter expressions using integers or floating - point numbers.\n";
+    cout << "You may use '{', '}','(', & ')' to denote modifications to the normal order of mathematical operations.\n";
+    cout << "You may enter multiple expressions seperated by ';'.\n\n";
+    cout << "Operators:\n";
+    cout << "   Addition: '+', Subtraction: '-', Multiplication: '*', Division: '/', Modulo: '%',\n";
+    cout << "   Squareroot: 'sqrt(your expression here)', Power: 'pow(your expression here, exponent integer here)',\n";
+    cout << "   Factorial: your expression followed by '!' \n";
+    cout << "Examples: 1+{2-(3*4/5)}; sqrt(9); pow(3,2); 3!; -5+-5; 10%3;\n\n";
+    cout << "Variables:\n";
+    cout << "   You may define a variable by typing 'let (your variable here) = (your expression here)' Example: let x=5;.\n";
+    cout << "   Variables must start with an alpha character and contain no spaces.\n";
+    cout << "   To redeclare a variable use 'reset (your variable here) = (your expression here)' Example: reset x=6;.\n\n";
+    cout << "Included mathematical constants:\n";
+    cout << "   'pi' (3.1415926535), 'e' (2.7182818284), 'k' (1000)\n\n";
+}
+
+//------------------------------------------------------------------------------
+//
+
+void clean_up_mess(Token_stream& tkn_strm)
+{
+    tkn_strm.ignore(print);
+}
+
+//------------------------------------------------------------------------------
+// Parsing Functions Section
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//
+
+double primary(Token_stream& tkn_strm, vector<Variable>& var_table)
+{
+    Token tkn;
+
+    tkn = tkn_strm.get();
+    switch (tkn.kind) {
     case '{':
     {
-        double c = expression();
-        t = ts.get();
-        if (t.kind != '}') {
-            error("'}' expected");
-        }
-        return c;
+        return braces(tkn_strm, var_table);
     }
     case '(':
     {
-        double d = expression();
-        t = ts.get();
-        if (t.kind != ')') {
-            error("')' expected");
-        }
-        return d;
+        return parenthesis(tkn_strm, var_table);
     }
 
     case '-':
     {
-        return -primary();
+        return neg_exp(tkn_strm, var_table);
     }
     case '+':
     {
-        return primary();
+        return pos_exp(tkn_strm, var_table);
     }
     case number:
     {
-        return t.value;
+        return tkn.value;
     }
     case name:
     {
-        return get_value(t.name);
+        return get_value(tkn.name, var_table);
     }
     case root:
     {
-        return squareroot();
+        return squareroot(tkn_strm, var_table);
     }
     case power:
     {
-        return powerfunc();
+        return powerfunc(tkn_strm, var_table);
     }
     default:
-        error("primary expected");
+        cin.unget();
+        error("Error: Primary expected");
+        cin.putback(print);
     }
 }
 
-double factorial() 
+//------------------------------------------------------------------------------
+//
+
+double factorial(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    double left = primary();
-    Token t = ts.get();
+    Token tkn;
+    double left;
+
+    left = primary(tkn_strm, var_table);
+    tkn = tkn_strm.get();
     while (true) {
 
-        switch (t.kind) {
+        switch (tkn.kind) {
         case '!':
         {
-            double x = left;
-            double f = x;
-            for (int i = 0; i < left - 1; ++i) {
-                f *= --x;
-            }
-            return f;
+            return calculate_fac(left);
         }
         default:
-            ts.putback(t);
+            tkn_strm.putback(tkn);
             return left;
         }
     }
 }
 
-double term()
+//------------------------------------------------------------------------------
+//
+
+double term(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    double left = factorial();
-    Token t = ts.get();
+    Token tkn;
+    double left;
+
+    left = factorial(tkn_strm, var_table);
+    tkn = tkn_strm.get();
     while (true) {
-        switch (t.kind)
+        switch (tkn.kind)
         {
         case '*':
         {
-            left *= factorial();
-            t = ts.get();
+            multiply(left, tkn, tkn_strm, var_table);
             break;
         }
         case '/':
         {
-            double d = factorial();
-            if (d == 0) error("divide by zero");
-            left /= d;
-            t = ts.get();
+            divide(left, tkn, tkn_strm, var_table);
             break;
         }
         case '%':
         {
-            int i1 = narrow_cast<int>(left);
-            int i2 = narrow_cast<int>(factorial());
-            if (i2 == 0) error("%: divide by zero");
-            left = i1 % i2;
-            t = ts.get();
+            modulo(left, tkn, tkn_strm, var_table);
             break;
         }
 
         default:
-            ts.putback(t);
+            tkn_strm.putback(tkn);
             return left;
         }
     }
 }
 
-double expression()
+//------------------------------------------------------------------------------
+//
+
+double expression(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    double left = term();
-    Token t = ts.get();
+    Token tkn; 
+    double left;
+
+    left = term(tkn_strm, var_table);
+    tkn= tkn_strm.get();
     while (true) {
-        switch (t.kind) {
+        switch (tkn.kind) {
         case '+':
         {
-            left += term();
-            t = ts.get();
+            add(left, tkn, tkn_strm, var_table);
             break;
         }
         case '-':
         {
-            left -= term();
-            t = ts.get();
+            subtract(left, tkn, tkn_strm, var_table);
             break;
         }
         default:
-            ts.putback(t);
+            tkn_strm.putback(tkn);
             return left;
         }
     }
 }
 
-double declaration()
+//------------------------------------------------------------------------------
+//
+
+double declaration(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t = ts.get();
-    if (t.kind != name) {
+    Token tkn;
+    Token tkn2;
+    string var_name;
+    double expr;
+
+   tkn = tkn_strm.get();
+    if (tkn.kind != name) {
+        cin.putback(print);
         error("name expected in declaration");
     }
-    string var_name = t.name;
-    Token t2 = ts.get();
-    if (t2.kind != '=') {
+    var_name = tkn.name;
+    tkn2 = tkn_strm.get();
+    if (tkn2.kind != '=') {
+        cin.putback(print);
         error("= missing in declaration of ", var_name);
     }
-    double d = expression();
-    define_name(var_name, d);
-    return d;
+    expr = expression(tkn_strm, var_table);
+    define_name(var_name, expr, var_table);
+    return expr;
 }
 
-double statement()
+//------------------------------------------------------------------------------
+//
+
+double statement(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t = ts.get();
-    switch (t.kind) {
+    Token tkn;
+
+    tkn = tkn_strm.get();
+    switch (tkn.kind) {
     case let:
     {
-        return declaration();
+        return declaration(tkn_strm, var_table);
+    }
+    case reset:
+    {
+        return reset_value(tkn_strm, var_table);
     }
     default:
-        ts.putback(t);
-        return expression();
+        tkn_strm.putback(tkn);
+        return expression(tkn_strm, var_table);
     }
 }
 
-void clean_up_mess()
+void calculate(Token_stream& tkn_strm, vector<Variable> var_table)
 {
-    ts.ignore(print);
-}
+    Token tkn;
 
-void calculate()
-{
-    while (cin)
+    cout << prompt;
+    while (cin){
         try {
-        cout << prompt;
-        Token t = ts.get();
-        while (t.kind == print) {
-            t = ts.get();
+            tkn = tkn_strm.get();
+            while (tkn.kind == print) {
+                tkn = tkn_strm.get();
+            }
+            if (tkn.kind == help) {
+                helpdisplay();
+            }
+            if (tkn.kind == quit) {
+                return;
+            }
+            if (tkn.kind != help) {
+                tkn_strm.putback(tkn);
+                cout << result << statement(tkn_strm, var_table) << '\n';
+            }
+            if (cin.get() == '\n') {
+                cout << prompt;
+            }
+            else
+                cin.unget();
         }
-        if (t.kind == quit) {
-            return;
+        catch (exception& e) {
+            cerr << e.what() << '\n';
+                clean_up_mess(tkn_strm);
+            if (cin.get() == '\n') {
+                cout << prompt;
+            }
+            else {
+                cin.unget();
+            }
         }
-        ts.putback(t);
-        cout << result << statement() << '\n';
-    }
-    catch (exception& e) {
-        cerr << e.what() << '\n';
-        clean_up_mess();
     }
 }

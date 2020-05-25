@@ -6,8 +6,8 @@
 #include "Errors.h"
 
 using std::cin;
+using std::cout;
 using std::string;
-
 
 //------------------------------------------------------------------------------
 // This constructor initializes Token_stream's buffer to be empty and overwritable
@@ -17,6 +17,17 @@ Token_stream::Token_stream()
 {
 }
 
+bool new_line(char& ch)
+{
+    if (cin.get() == '\n') {
+        ch = ';';
+        return true;
+    }
+    else {
+        cin.unget();
+        return false;
+    }
+}
 
 //------------------------------------------------------------------------------
 // Evaluates the buffer and assembles and returns a Token(char ch), Token(char ch , double val),
@@ -29,7 +40,8 @@ Token Token_stream::get()
         return buffer; // Returns token currently in buffer
     }
     char ch;
-    cin >> ch;
+    if (!new_line(ch)) cin >> ch;
+    else cin.putback('\n');
     switch (ch) {
     case quit:
     case print:
@@ -65,8 +77,14 @@ Token Token_stream::get()
                 s += ch;
             }
             cin.putback(ch);
+            if (s == helpkey) {
+                return Token{ help };
+            }
             if (s == declkey) {
                 return Token{ let };
+            }
+            if (s == resetkey) {
+                return Token{ reset };
             }
             if (s == sqrtkey) {
                 return Token{ root };
@@ -77,6 +95,7 @@ Token Token_stream::get()
             return Token{ name, s };
         }
         error("Bad token");
+        return 1;
     }
     }
 }
@@ -99,14 +118,17 @@ void Token_stream::putback(Token t)
 
 void Token_stream::ignore(char c)
 {
+    char ch = 0;
+
     if (full && c == buffer.kind) {
         full = false;
         return;
     }
     full = false;
-    char ch = 0;
     while (cin >> ch) {
+        new_line(ch);
         if (ch == c) {
+            cin.unget();
             return;
         }
     }
