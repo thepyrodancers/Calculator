@@ -1,7 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <Windows.h>
-#include "conio.h"
 #include "Variable.h"
 #include "Errors.h"
 #include "Gconst.h"
@@ -43,24 +41,29 @@ double get_value(string s, vector<Variable>& var_table)
 // If a match for argument "string s" is not found "print" (;) is returned to the input stream
 // and an error is thrown
 
-double reset_value(Token_stream& myts, vector<Variable>& var_table)
+double reset_value(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t = myts.get();
-    if (t.kind != name) {
+    Token tkn;
+    Token tkn2;
+    double expr;
+    string var_name;
+
+    tkn = tkn_strm.get();
+    if (tkn.kind != name) {
         cin.putback(print);
         error("name expected in declaration");
     }
-    string var_name = t.name;
-    Token t2 = myts.get();
-    if (t2.kind != '=') {
+    var_name = tkn.name;
+    tkn2 = tkn_strm.get();
+    if (tkn2.kind != '=') {
         cin.putback(print);
         error("= missing in declaration of ", var_name);
     }
-    double d = expression(myts, var_table);
+    expr = expression(tkn_strm, var_table);
     for (int i = 0; i < var_table.size(); ++i) {
         if (var_table[i].name == var_name) {
-            var_table[i].value = d;
-            return d;
+            var_table[i].value = expr;
+            return expr;
         }
     }
     error("reset: undefined variable ", var_name);
@@ -102,15 +105,18 @@ double define_name(string var, double val, vector<Variable>& var_table)
 // If the kind property of the token is not a ')' an error is thrown
 // "double c" is returned
 
-double parenthesis(Token_stream& myts, vector<Variable>& var_table)
+double parenthesis(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    double c = expression(myts, var_table);
-    Token t = myts.get();
-    if (t.kind != ')') {
+    Token tkn;
+    double expr;
+
+    expr = expression(tkn_strm, var_table);
+    tkn = tkn_strm.get();
+    if (tkn.kind != ')') {
         cin.putback(print);
         error("')' expected");
     }
-    return c;
+    return expr;
 }
 
 //------------------------------------------------------------------------------
@@ -119,40 +125,47 @@ double parenthesis(Token_stream& myts, vector<Variable>& var_table)
 // If the "kind" property of the token is not a '}' an error is thrown
 // "double c" is returned
 
-double braces(Token_stream& myts, vector<Variable>& var_table)
+double braces(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    double c = expression(myts, var_table);
-    Token t = myts.get();
-    if (t.kind != '}') {
+    Token tkn;
+    double expr;
+
+    expr = expression(tkn_strm, var_table);
+    tkn = tkn_strm.get();
+    if (tkn.kind != '}') {
         cin.putback(print);
         error("'}' expected");
     }
-    return c;
+    return expr;
 }
 
-double neg_exp(Token_stream& myts, vector<Variable>& var_table)
+double neg_exp(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t2 = myts.get();
-    if (t2.kind == '-') {
+    Token tkn;
+
+    tkn = tkn_strm.get();
+    if (tkn.kind == '-') {
         error("Error: Primary expected (-)");
     }
     else {
-        myts.putback(t2);
-        return -primary(myts, var_table);
+        tkn_strm.putback(tkn);
+        return -primary(tkn_strm, var_table);
     }
 }
 
-double pos_exp(Token_stream& myts, vector<Variable>& var_table)
+double pos_exp(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t2 = myts.get();
-    if (t2.kind == '+') {
+    Token tkn;
+
+    tkn = tkn_strm.get();
+    if (tkn.kind == '+') {
 
         error("Error: Primary expected (+)");
 
     }
     else {
-        myts.putback(t2);
-        return primary(myts, var_table);
+        tkn_strm.putback(tkn);
+        return primary(tkn_strm, var_table);
     }
 }
 
@@ -161,23 +174,27 @@ double pos_exp(Token_stream& myts, vector<Variable>& var_table)
 // Evaluates the expression within the parenthesis of the "sqrt()" user input.
 // Returns the squareroot of the expression.
 
-double squareroot(Token_stream& myts, vector<Variable>& var_table)
+double squareroot(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t = myts.get();
-    if (t.kind != '(') {
+    Token tkn;
+    Token tkn2;
+    double expr;
+
+    tkn = tkn_strm.get();
+    if (tkn.kind != '(') {
         error("'(' expected");
     }
-    double e = expression(myts, var_table);
-    if (e < 0) {
+    expr = expression(tkn_strm, var_table);
+    if (expr < 0) {
         cin.putback(print);
         error("Square Root of Negative");
     }
-    Token t2 = myts.get();
-    if (t2.kind != ')') {
-        myts.putback(t2);
+    tkn2 = tkn_strm.get();
+    if (tkn2.kind != ')') {
+        tkn_strm.putback(tkn2);
         error("')' expected");
     }
-    return sqrt(e);
+    return sqrt(expr);
 }
 
 //------------------------------------------------------------------------------
@@ -185,26 +202,32 @@ double squareroot(Token_stream& myts, vector<Variable>& var_table)
 // Evaluates the expression within the parenthesis of the user input pow() and returns 
 // that expression the the power specified by the user.
 
-double powerfunc(Token_stream& myts, vector<Variable>& var_table)
+double powerfunc(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t = myts.get();
-    if (t.kind != '(') {
+    Token tkn;
+    Token tkn2;
+    Token tkn3;
+    double expr;
+    int exponent;
+
+    tkn = tkn_strm.get();
+    if (tkn.kind != '(') {
         error("'(' expected");
     }
-    double x = expression(myts, var_table);
-    Token t2 = myts.get();
-    if (t2.kind != ',') {
-        myts.putback(t2);
+    expr = expression(tkn_strm, var_table);
+    tkn2 = tkn_strm.get();
+    if (tkn2.kind != ',') {
+        tkn_strm.putback(tkn2);
         cin.putback(print);
         error("',' expected");
     }
-    int i = narrow_cast<int>(expression(myts, var_table));
-    Token t3 = myts.get();
-    if (t3.kind != ')') {
-        myts.putback(t3);
+    exponent = narrow_cast<int>(expression(tkn_strm, var_table));
+    tkn3 = tkn_strm.get();
+    if (tkn3.kind != ')') {
+        tkn_strm.putback(tkn3);
         error("')' expected");
     }
-    return pow(x, i);
+    return pow(expr, exponent);
 }
 
 //------------------------------------------------------------------------------
@@ -214,9 +237,9 @@ double powerfunc(Token_stream& myts, vector<Variable>& var_table)
 
 double calculate_fac(double fact)
 {
-    
     double x = fact;
     double f = x;
+
     for (int i = 0; i < fact - 1; ++i) {
         f *= --x;
     }
@@ -228,10 +251,10 @@ double calculate_fac(double fact)
 // as it is passed by reference.
 // Gets next token from Token_stream, which is passed by reference back to term()
 
-void multiply(double& left, Token& t, Token_stream& myts, vector<Variable>& var_table)
+void multiply(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    left *= factorial(myts, var_table);
-    t = myts.get();
+    left *= factorial(tkn_strm, var_table);
+    t = tkn_strm.get();
 }
 
 //------------------------------------------------------------------------------
@@ -239,43 +262,48 @@ void multiply(double& left, Token& t, Token_stream& myts, vector<Variable>& var_
 // set to "left" divided by double 'd' as it is passed by reference.
 // Gets next token from Token_stream, which is passed by reference back to term().
 
-void divide(double& left, Token& t, Token_stream& myts, vector<Variable>& var_table)
+void divide(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    double d = factorial(myts, var_table);
-    if (d == 0) error("divide by zero");
-    left /= d;
-    t = myts.get();
+    double expr;
+
+    expr = factorial(tkn_strm, var_table);
+    if (expr == 0) error("divide by zero");
+    left /= expr;
+    t = tkn_strm.get();
 }
 
 //------------------------------------------------------------------------------
 //
 
-void modulo(double& left, Token& t, Token_stream& myts, vector<Variable>& var_table)
+void modulo(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    int i1 = narrow_cast<int>(left);
-    int i2 = narrow_cast<int>(factorial(myts, var_table));
-    if (i2 == 0) error("%: divide by zero");
-    left = i1 % i2;
-    t = myts.get();
+    int expr1;
+    int expr2;
+
+    expr1 = narrow_cast<int>(left);
+    expr2= narrow_cast<int>(factorial(tkn_strm, var_table));
+    if (expr2 == 0) error("%: divide by zero");
+    left = expr1 % expr2;
+    t = tkn_strm.get();
 }
 
 //------------------------------------------------------------------------------
 //
 
-void add(double& left, Token& t, Token_stream& myts, vector<Variable>& var_table)
+void add(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    left += term(myts, var_table);
-    t = myts.get();
+    left += term(tkn_strm, var_table);
+    t = tkn_strm.get();
 
 }
 
 //------------------------------------------------------------------------------
 //
 
-void subtract(double& left, Token& t, Token_stream& myts, vector<Variable>& var_table)
+void subtract(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    left -= term(myts, var_table);
-    t = myts.get();
+    left -= term(tkn_strm, var_table);
+    t = tkn_strm.get();
 }
 
 //------------------------------------------------------------------------------
@@ -302,9 +330,9 @@ void helpdisplay()
 //------------------------------------------------------------------------------
 //
 
-void clean_up_mess(Token_stream& myts)
+void clean_up_mess(Token_stream& tkn_strm)
 {
-    myts.ignore(print);
+    tkn_strm.ignore(print);
 }
 
 //------------------------------------------------------------------------------
@@ -314,42 +342,44 @@ void clean_up_mess(Token_stream& myts)
 //------------------------------------------------------------------------------
 //
 
-double primary(Token_stream& myts, vector<Variable>& var_table)
+double primary(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t = myts.get();
-    switch (t.kind) {
+    Token tkn;
+
+    tkn = tkn_strm.get();
+    switch (tkn.kind) {
     case '{':
     {
-        return braces(myts, var_table);
+        return braces(tkn_strm, var_table);
     }
     case '(':
     {
-        return parenthesis(myts, var_table);
+        return parenthesis(tkn_strm, var_table);
     }
 
     case '-':
     {
-        return neg_exp(myts, var_table);
+        return neg_exp(tkn_strm, var_table);
     }
     case '+':
     {
-        return pos_exp(myts, var_table);
+        return pos_exp(tkn_strm, var_table);
     }
     case number:
     {
-        return t.value;
+        return tkn.value;
     }
     case name:
     {
-        return get_value(t.name, var_table);
+        return get_value(tkn.name, var_table);
     }
     case root:
     {
-        return squareroot(myts, var_table);
+        return squareroot(tkn_strm, var_table);
     }
     case power:
     {
-        return powerfunc(myts, var_table);
+        return powerfunc(tkn_strm, var_table);
     }
     default:
         cin.unget();
@@ -361,19 +391,22 @@ double primary(Token_stream& myts, vector<Variable>& var_table)
 //------------------------------------------------------------------------------
 //
 
-double factorial(Token_stream& myts, vector<Variable>& var_table)
+double factorial(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    double left = primary(myts, var_table);
-    Token t = myts.get();
+    Token tkn;
+    double left;
+
+    left = primary(tkn_strm, var_table);
+    tkn = tkn_strm.get();
     while (true) {
 
-        switch (t.kind) {
+        switch (tkn.kind) {
         case '!':
         {
             return calculate_fac(left);
         }
         default:
-            myts.putback(t);
+            tkn_strm.putback(tkn);
             return left;
         }
     }
@@ -382,31 +415,34 @@ double factorial(Token_stream& myts, vector<Variable>& var_table)
 //------------------------------------------------------------------------------
 //
 
-double term(Token_stream& myts, vector<Variable>& var_table)
+double term(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    double left = factorial(myts, var_table);
-    Token t = myts.get();
+    Token tkn;
+    double left;
+
+    left = factorial(tkn_strm, var_table);
+    tkn = tkn_strm.get();
     while (true) {
-        switch (t.kind)
+        switch (tkn.kind)
         {
         case '*':
         {
-            multiply(left, t, myts, var_table);
+            multiply(left, tkn, tkn_strm, var_table);
             break;
         }
         case '/':
         {
-            divide(left, t, myts, var_table);
+            divide(left, tkn, tkn_strm, var_table);
             break;
         }
         case '%':
         {
-            modulo(left, t, myts, var_table);
+            modulo(left, tkn, tkn_strm, var_table);
             break;
         }
 
         default:
-            myts.putback(t);
+            tkn_strm.putback(tkn);
             return left;
         }
     }
@@ -415,24 +451,27 @@ double term(Token_stream& myts, vector<Variable>& var_table)
 //------------------------------------------------------------------------------
 //
 
-double expression(Token_stream& myts, vector<Variable>& var_table)
+double expression(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    double left = term(myts, var_table);
-    Token t = myts.get();
+    Token tkn; 
+    double left;
+
+    left = term(tkn_strm, var_table);
+    tkn= tkn_strm.get();
     while (true) {
-        switch (t.kind) {
+        switch (tkn.kind) {
         case '+':
         {
-            add(left, t, myts, var_table);
+            add(left, tkn, tkn_strm, var_table);
             break;
         }
         case '-':
         {
-            subtract(left, t, myts, var_table);
+            subtract(left, tkn, tkn_strm, var_table);
             break;
         }
         default:
-            myts.putback(t);
+            tkn_strm.putback(tkn);
             return left;
         }
     }
@@ -441,66 +480,72 @@ double expression(Token_stream& myts, vector<Variable>& var_table)
 //------------------------------------------------------------------------------
 //
 
-double declaration(Token_stream& myts, vector<Variable>& var_table)
+double declaration(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t = myts.get();
-    if (t.kind != name) {
+    Token tkn;
+    Token tkn2;
+    string var_name;
+    double expr;
+
+   tkn = tkn_strm.get();
+    if (tkn.kind != name) {
         cin.putback(print);
         error("name expected in declaration");
     }
-    string var_name = t.name;
-    Token t2 = myts.get();
-    if (t2.kind != '=') {
+    var_name = tkn.name;
+    tkn2 = tkn_strm.get();
+    if (tkn2.kind != '=') {
         cin.putback(print);
         error("= missing in declaration of ", var_name);
     }
-    double d = expression(myts, var_table);
-    define_name(var_name, d, var_table);
-    return d;
+    expr = expression(tkn_strm, var_table);
+    define_name(var_name, expr, var_table);
+    return expr;
 }
 
 //------------------------------------------------------------------------------
 //
 
-double statement(Token_stream& myts, vector<Variable>& var_table)
+double statement(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
-    Token t = myts.get();
+    Token tkn;
 
-    switch (t.kind) {
+    tkn = tkn_strm.get();
+    switch (tkn.kind) {
     case let:
     {
-        return declaration(myts, var_table);
+        return declaration(tkn_strm, var_table);
     }
     case reset:
     {
-        return reset_value(myts, var_table);
+        return reset_value(tkn_strm, var_table);
     }
     default:
-        myts.putback(t);
-        return expression(myts, var_table);
+        tkn_strm.putback(tkn);
+        return expression(tkn_strm, var_table);
     }
 }
 
-void calculate(Token_stream& myts, vector<Variable> var_table)
+void calculate(Token_stream& tkn_strm, vector<Variable> var_table)
 {
-    Token t;
+    Token tkn;
 
     cout << prompt;
     while (cin){
         try {
-            t = myts.get();
-            while (t.kind == print) {
-                t = myts.get();
+            tkn = tkn_strm.get();
+            while (tkn.kind == print) {
+                tkn = tkn_strm.get();
             }
-            if (t.kind == help) {
+            if (tkn.kind == help) {
                 helpdisplay();
             }
-            if (t.kind == quit) {
+            if (tkn.kind == quit) {
                 return;
             }
-            if (t.kind != help) {
-                myts.putback(t);
-                cout << result << statement(myts, var_table) << '\n';
+            if (tkn.kind != help) {
+                tkn_strm.putback(tkn);
+                cout << result << statement(tkn_strm, var_table) << '\n';
             }
             if (cin.get() == '\n') {
                 cout << prompt;
@@ -510,7 +555,7 @@ void calculate(Token_stream& myts, vector<Variable> var_table)
         }
         catch (exception& e) {
             cerr << e.what() << '\n';
-                clean_up_mess(myts);
+                clean_up_mess(tkn_strm);
             if (cin.get() == '\n') {
                 cout << prompt;
             }

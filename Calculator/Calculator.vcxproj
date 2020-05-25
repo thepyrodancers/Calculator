@@ -152,7 +152,6 @@
     <ClCompile Include="Token_stream.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Calculator.h" />
     <ClInclude Include="Errors.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Gconst.h" />

@@ -2,7 +2,7 @@
 Simple Calculator
 
 This program implements a basic expression calculator.
-Input comes from cin through the Token_stream called "ts"; output to cout.
+Input comes from cin through the Token_stream called "tkn_strm"; output to cout.
 The grammar for input is :
 Calculation:
     Statement
@@ -14,7 +14,7 @@ Statement:
 Expression :
     Term
     Expression + Term
-    Expression – Term
+    Expression - Term
 Term :
     Primary
     Term * Primary
@@ -25,7 +25,7 @@ Factorial:
 Primary :
     Number
     (Expression)
-    – Primary
+    - Primary
     + Primary
     Name (Variable)
     sqrt(Expression)
@@ -52,7 +52,7 @@ using std::exception;
 
 int main()
 try {
-    Token_stream myts;
+    Token_stream tkn_strm;
     vector<Variable> var_table;
 
     cout << "       D(umb) & A(ss) Enterprises\n               presents: \n    A COMPLEX SIMPLE CALCULATOR!\n\n";
@@ -61,7 +61,7 @@ try {
     define_name("e", 2.7182818284, var_table);
     define_name("k", 1000, var_table);
 
-    calculate(myts, var_table);
+    calculate(tkn_strm, var_table);
     return 0;
 }
 catch (exception& e) {
