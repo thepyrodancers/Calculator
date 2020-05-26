@@ -35,11 +35,14 @@ bool new_line(char& ch)
 
 Token Token_stream::get()
 {
+    char ch;
+    double val;
+    string s;
+
     if (full) {
         full = false; // Buffer can be overwritten
         return buffer; // Returns token currently in buffer
     }
-    char ch;
     if (!new_line(ch)) cin >> ch;
     else cin.putback('\n');
     switch (ch) {
@@ -64,14 +67,12 @@ Token Token_stream::get()
     case '5': case '6': case '7': case '8': case '9':
     {
         cin.putback(ch);
-        double val;
         cin >> val;
         return Token{ number,val };
     }
     default:
     {
         if (isalpha(ch)) {
-            string s;
             s += ch;
             while (cin.get(ch) && (isalpha(ch) || isdigit(ch))) {
                 s += ch;
