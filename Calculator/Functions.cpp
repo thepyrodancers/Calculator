@@ -7,7 +7,6 @@
 #include "Functions.h"
 #include "Token_stream.h"
 
-
 using std::cin;
 using std::cout;
 using std::vector;
