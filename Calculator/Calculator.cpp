@@ -55,7 +55,7 @@ try {
     Token_stream tkn_strm;
     vector<Variable> var_table;
 
-    cout << "       D(umb) & A(ss) Enterprises\n               presents: \n    A COMPLEX SIMPLE CALCULATOR!\n\n";
+    cout << "       Aaron Sumpter\n         presents: \n    A Simple Calculator\n\n";
     cout << "You may enter 'help' for instructions or 'q' to quit at anytime.\n\n";
     define_name("pi", 3.1415926535, var_table);
     define_name("e", 2.7182818284, var_table);

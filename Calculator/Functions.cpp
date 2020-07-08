@@ -19,9 +19,9 @@ using std::exception;
 
 //------------------------------------------------------------------------------
 // Searches through vector "var_table" for argument "string s"; if a match
-// is found, returns the value property of that vector element
+// is found, returns the value property of that vector element.
 // If a match for argument "string s" is not found "print" (;) is returned to the input stream
-// and an error is thrown
+// and an error is thrown.
 
 double get_value(string s, vector<Variable>& var_table)
 {
@@ -36,9 +36,9 @@ double get_value(string s, vector<Variable>& var_table)
 
 //------------------------------------------------------------------------------
 // Searches through vector "var_table" for argument "string s"; if a match
-// is found, the value property of that vector member is set to argument "double d"
+// is found, the value property of that vector member is set to argument "double d".
 // If a match for argument "string s" is not found "print" (;) is returned to the input stream
-// and an error is thrown
+// and an error is thrown.
 
 double reset_value(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -71,7 +71,7 @@ double reset_value(Token_stream& tkn_strm, vector<Variable>& var_table)
 //------------------------------------------------------------------------------
 // Searches through vector "var_table" for argument "string var"; if a match is
 // found, bool is_declared(string var) returns true and if a match is not found
-// returns false
+// returns false.
 
 bool is_declared(string var, vector<Variable>& var_table)
 {
@@ -83,11 +83,11 @@ bool is_declared(string var, vector<Variable>& var_table)
 }
 
 //------------------------------------------------------------------------------
-// Calls function "is_declared" passing the argument "string var" to check if 
-// argument "string var" has already been declared (returns true). If it has been 
+// Calls function "is_declared" passing the user inputted argument "string var" to check if 
+// it has already been declared (returns true). If it has already been 
 // declared an error is thrown. If argument "string var" has NOT been previously declared
 // (returns false), it is then added to vector "var_table" along with the value property argument
-//  "double val" and value property "double val" is returned
+//  "double val" and value property "val" is returned.
 
 double define_name(string var, double val, vector<Variable>& var_table)
 {
@@ -99,10 +99,9 @@ double define_name(string var, double val, vector<Variable>& var_table)
 }
 
 //------------------------------------------------------------------------------
-// "double c" is set to the result of function "expression()", Token t is set to
-// the next token in Token_stream 'ts', which is returned by  function "ts.get()"
-// If the kind property of the token is not a ')' an error is thrown
-// "double c" is returned
+// Evaluates an expression following a '(' token. If the token following the expression
+// is not a ')' an error is thrown. The result of the expression within the parenthesis or
+// "expr" is returned.
 
 double parenthesis(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -119,10 +118,9 @@ double parenthesis(Token_stream& tkn_strm, vector<Variable>& var_table)
 }
 
 //------------------------------------------------------------------------------
-// "double c" is set to the result of function "expression()", Token t is set to
-// the next token in Token_stream 'ts', which is returned by  function "ts.get()"
-// If the "kind" property of the token is not a '}' an error is thrown
-// "double c" is returned
+// Evaluates an expression following a '{' token. If the token following the expression
+// is not a '}' an error is thrown. The result of the expression within the braces or
+// "expr" is returned.
 
 double braces(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -138,6 +136,10 @@ double braces(Token_stream& tkn_strm, vector<Variable>& var_table)
     return expr;
 }
 
+//------------------------------------------------------------------------------
+// Returns a primary as a negative value when denoted by the user with a preceeding '-'.
+// An error is thrown if a '-' is used with no following primary.
+
 double neg_exp(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
     Token tkn;
@@ -151,6 +153,10 @@ double neg_exp(Token_stream& tkn_strm, vector<Variable>& var_table)
         return -primary(tkn_strm, var_table);
     }
 }
+
+//------------------------------------------------------------------------------
+// Returns a primary as a positive value when unneccessarily denoted by the user with a preceeding '+'.
+// An error is thrown if a '+' is used with no following primary.
 
 double pos_exp(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -171,7 +177,7 @@ double pos_exp(Token_stream& tkn_strm, vector<Variable>& var_table)
 //------------------------------------------------------------------------------
 // Gets tokens made from user input from Token_stream. Returns errors if incorrect syntax is used.
 // Evaluates the expression within the parenthesis of the "sqrt()" user input.
-// Returns the squareroot of the expression.
+// Returns the squareroot of the expression "expr".
 
 double squareroot(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -198,8 +204,9 @@ double squareroot(Token_stream& tkn_strm, vector<Variable>& var_table)
 
 //------------------------------------------------------------------------------
 // Gets tokens made from user input from Token_stream. Returns errors if incorrect syntax is used.
-// Evaluates the expression within the parenthesis of the user input pow() and returns 
-// that expression the the power specified by the user.
+// Evaluates the user inputted expression within the parenthesis of the user input "pow()" and returns 
+// that expression "expr" to the power of the "exponent" specified by the user. "exponent" is narrow cast
+// as an integer so floating-point decimal numbers will not be accepted as an exponent.
 
 double powerfunc(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -250,31 +257,35 @@ double calculate_fac(double fact)
 // as it is passed by reference.
 // Gets next token from Token_stream, which is passed by reference back to term()
 
-void multiply(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
+void multiply(double& left, Token& tkn, Token_stream& tkn_strm, vector<Variable>& var_table)
 {
     left *= factorial(tkn_strm, var_table);
-    t = tkn_strm.get();
+    tkn = tkn_strm.get();
 }
 
 //------------------------------------------------------------------------------
-// Sets double 'd' to the result of factorial(). Variable "left" from term() is 
+// Sets double 'expr' to the result of factorial(). Variable "left" from term() is 
 // set to "left" divided by double 'd' as it is passed by reference.
 // Gets next token from Token_stream, which is passed by reference back to term().
 
-void divide(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
+void divide(double& left, Token& tkn, Token_stream& tkn_strm, vector<Variable>& var_table)
 {
     double expr;
 
     expr = factorial(tkn_strm, var_table);
     if (expr == 0) error("divide by zero");
     left /= expr;
-    t = tkn_strm.get();
+    tkn = tkn_strm.get();
 }
 
 //------------------------------------------------------------------------------
-//
+// Sets double 'expr1' to "left" from term(). Sets double 'expr2' to the result of factorial().
+// "left" in term() is then set to the result of the modulo operation of "expr1" and "expr2"
+// as it is passed by reference. Floating-point decimals are not used in modulo operation so
+// both expressions are narrow cast as integers. An error is thrown if division by 0 occurs.
+// "tkn" is set to the next token from the Token_stream and is passed by reference back to term().
 
-void modulo(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
+void modulo(double& left, Token& tkn, Token_stream& tkn_strm, vector<Variable>& var_table)
 {
     int expr1;
     int expr2;
@@ -283,30 +294,34 @@ void modulo(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& va
     expr2= narrow_cast<int>(factorial(tkn_strm, var_table));
     if (expr2 == 0) error("%: divide by zero");
     left = expr1 % expr2;
-    t = tkn_strm.get();
+    tkn = tkn_strm.get();
 }
 
 //------------------------------------------------------------------------------
-//
+// Variable "left" from expression() is added to the result of term() and then passed by reference
+// back to expression(). "tkn" is set to the next token from the Token_stream and is passed by 
+// reference back to expression() as well.
 
-void add(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
+void add(double& left, Token& tkn, Token_stream& tkn_strm, vector<Variable>& var_table)
 {
     left += term(tkn_strm, var_table);
-    t = tkn_strm.get();
+    tkn = tkn_strm.get();
 
 }
 
 //------------------------------------------------------------------------------
-//
+// The result of term() is subtracted from the variable "left" from expression() and then passed by reference
+// back to expression(). "tkn" is set to the next token from the Token_stream and is passed by 
+// reference back to expression() as well.
 
-void subtract(double& left, Token& t, Token_stream& tkn_strm, vector<Variable>& var_table)
+void subtract(double& left, Token& tkn, Token_stream& tkn_strm, vector<Variable>& var_table)
 {
     left -= term(tkn_strm, var_table);
-    t = tkn_strm.get();
+    tkn = tkn_strm.get();
 }
 
 //------------------------------------------------------------------------------
-//
+// The instructions for user input and operations are outputted to the console.
 
 void helpdisplay()
 {
@@ -327,7 +342,9 @@ void helpdisplay()
 }
 
 //------------------------------------------------------------------------------
-//
+// When an expression in a list of expressions is found to have an error
+// the ';' or "print" character following the erroroneous expression is passed to tkn_strm.ignore
+// and is removed from the evaluation of the proceeding expressions.
 
 void clean_up_mess(Token_stream& tkn_strm)
 {
@@ -339,7 +356,13 @@ void clean_up_mess(Token_stream& tkn_strm)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//
+// Gets next token from the token stream. Calls various functions depending on the token type.
+// Handles expressions within braces or parenthesis by calling braces() or parenthesis().
+// Handles negative numbers by returning -primary() when a '-' is placed before a number or expression.
+// Returns the numeric value of a number token.
+// Calls get_value() to return the numeric value for a user defined variable string.
+// Calls squareroot() and powerfunc() when the user has inputted "sqrt()" or "pow()".
+// Returns error if incorrect syntax is used.
 
 double primary(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -388,7 +411,8 @@ double primary(Token_stream& tkn_strm, vector<Variable>& var_table)
 }
 
 //------------------------------------------------------------------------------
-//
+// Gets next token from token stream and calls calculatefac() when a factioral denoted by '!' is used.
+// All tokens other than '!' are put back into the token stream.
 
 double factorial(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -412,7 +436,9 @@ double factorial(Token_stream& tkn_strm, vector<Variable>& var_table)
 }
 
 //------------------------------------------------------------------------------
-//
+// Gets next token from token stream and evaluates a term. Calls multiply(), divide(),
+// or modulo() when multiplication, diviion, or modulo denoted by '*', '/', or '%' are used.
+// All tokens other than '*', '/', and '%' are put back into the token stream.
 
 double term(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -448,7 +474,9 @@ double term(Token_stream& tkn_strm, vector<Variable>& var_table)
 }
 
 //------------------------------------------------------------------------------
-//
+// Gets next token from the token stream and evaluates expressions. Calls add() and 
+// subract() when addition or subtraction denoted by '+' and '-' are used.
+// All tokens other than '+' and '-' are returned to the token stream.
 
 double expression(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -477,7 +505,10 @@ double expression(Token_stream& tkn_strm, vector<Variable>& var_table)
 }
 
 //------------------------------------------------------------------------------
-//
+// Creates user declared string variable with its associated numerical value
+// and passes it to define_name() to be added to the variable table.
+// Checks that user has properly declared the variable with the format "x = expression"
+// Returns the numerical value of the user defined string variable.
 
 double declaration(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -503,7 +534,11 @@ double declaration(Token_stream& tkn_strm, vector<Variable>& var_table)
 }
 
 //------------------------------------------------------------------------------
-//
+// Gets the next token from the token stream and if it is a "let" token (i.e. user input "let x = 3")
+// returns declaration(), which creates a user declared variable from the user's inputted string and numeric value.
+// If the token is a "reset" token (i.e. user input "reset x = 4") returns reset_value(), which updates
+// the numeric value of the user's previously declared string Variable.
+// All other tokens are returned to the token stream for further evaluation.
 
 double statement(Token_stream& tkn_strm, vector<Variable>& var_table)
 {
@@ -524,6 +559,15 @@ double statement(Token_stream& tkn_strm, vector<Variable>& var_table)
         return expression(tkn_strm, var_table);
     }
 }
+
+//------------------------------------------------------------------------------
+//  Begins creation, evaluation, and storing of tokens in the buffer.
+// Results of expressions are evaluated beginning with the call of statement().
+// Outputs result of each individual expression ended with the "print" character ';'.
+// Checks for "quit" character 'q' and ends program when it is used.
+// Checks for "help" string and calls helpdisplay() when it is used.
+// Checks for errors in individual expressions and outputs error messages while allowing.
+// the evaluation of all other expressions by calling clean_up_mess(). 
 
 void calculate(Token_stream& tkn_strm, vector<Variable> var_table)
 {
